@@ -17,7 +17,7 @@
         config,
         inputs',
         ...
-      }: {
+      }: rec {
         treefmt = {
           projectRootFile = "flake.nix";
           programs = {
@@ -133,6 +133,11 @@
                   };
 
                 config = {
+                  # # generate on demand
+                  # sources = ["bunnyway/bunnynet@0.4.1"];
+                  # # alternatively:
+                  # imports = []; # import generated providers
+
                   providers.bunnynet.default = {};
                   providers.bunnynet.somealias = {
                     api_key = "some_api_key";
@@ -152,11 +157,55 @@
           };
         };
 
+        legacyPackages.test2 = pkgs.callPackage ./lib {};
+        legacyPackages.test = (pkgs.callPackage ./lib {}).mkModule {
+          sources = ["registry.terraform.io/hashicorp/vault@4.7.0"];
+          module = {config, ...}: {
+            # either generate on demand using sources or use existing via import:
+            # imports = [./testModules];
+
+            provider.vault."default" = {
+              address = "hello";
+            };
+
+            data.vault_namespace."test" = {
+              namespace = "meow";
+              path = "meow";
+            };
+
+            locals."test" = config.data.vault_namespace."test".id;
+          };
+        };
+
+        apps = let
+          lib = pkgs.callPackage ./lib {};
+        in {
+          "tofunix" = {
+            type = "app";
+            program = lib.mkCli {
+              plugins = [pkgs.terraform-providers.vault];
+              module = legacyPackages.test;
+              # maybe also support source so the user can specify their own files/directory?
+              # source = legacyPackages.test.config.finalPackage;
+            };
+          };
+          "aio" = {
+            type = "app";
+            program = lib.mkCliAio {
+              plugins = [pkgs.terraform-providers.vault];
+              moduleConfig = {
+                provider.vault."default".address = "test";
+              };
+            };
+          };
+        };
+
         packages = {
           provider = pkgs.callPackage ./generator.nix {
             source = "BunnyWay/bunnynet";
             version = "0.4.1";
           };
+          testNew = (pkgs.callPackage ./lib {}).generateOptions ["registry.terraform.io/hashicorp/vault@4.7.0"];
           test = pkgs.opentofu.withPlugins (p: [
             p.random
           ]);
