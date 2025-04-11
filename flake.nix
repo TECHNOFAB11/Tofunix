@@ -193,8 +193,9 @@
             type = "app";
             program = lib.mkCliAio {
               plugins = [pkgs.terraform-providers.vault];
-              moduleConfig = {
-                provider.vault."default".address = "test";
+              moduleConfig = {ref, ...}: {
+                variable."test".default = "meow";
+                provider.vault."default".address = ref.var."test";
               };
             };
           };

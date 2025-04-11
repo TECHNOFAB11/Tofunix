@@ -89,6 +89,47 @@ in
             };
           };
 
+          # NOTE: dynamic accessors dont exist in Nix, but instead we could use
+          #  __toString and __functor to expand on this?
+          #  depending on how often sub-attrs are needed we could do this:
+          #  {
+          #    _attrs = [name];
+          #    __functor = self: attr: self // { attrs = self.attrs ++ [attr]; };
+          #    __toString = self: "\${var.${concatStringSep "." self.attrs}}"
+          #  }
+          #  or maybe add an attr "get" which then does that
+          config._module.args.ref =
+            {
+              var = builtins.listToAttrs (builtins.map (name: {
+                inherit name;
+                value = "\${var.${name}}";
+              }) (builtins.attrNames config.variable));
+              local = builtins.listToAttrs (builtins.map (name: {
+                inherit name;
+                value = "\${local.${name}}";
+              }) (builtins.attrNames config.locals));
+              data = builtins.listToAttrs (builtins.map (data: {
+                name = data;
+                value = builtins.listToAttrs (builtins.map (name: {
+                  inherit name;
+                  value = builtins.listToAttrs (builtins.map (attr: {
+                    name = attr;
+                    value = "\${data.${data}.${name}.${attr}}";
+                  }) (builtins.attrNames (config.data.${data}.${name})));
+                }) (builtins.attrNames config.data.${data}));
+              }) (builtins.attrNames config.data));
+            }
+            // (builtins.listToAttrs (builtins.map (resource: {
+              name = resource;
+              value = builtins.listToAttrs (builtins.map (name: {
+                inherit name;
+                value = builtins.listToAttrs (builtins.map (attr: {
+                  name = attr;
+                  value = "\${${resource}.${name}.${attr}}";
+                }) (builtins.attrNames config.resource.${resource}.${name}));
+              }) (builtins.attrNames config.resource.${resource}));
+            }) (builtins.attrNames config.resource)));
+
           config.final = let
             wrap = field: nest:
               filterNullsRecursive (
