@@ -35,22 +35,34 @@
     owner,
     repo,
     version,
-    sha256,
-    os ? "linux",
-    arch ? "amd64",
+    hash,
   }:
-    builtins.fetchurl {
-      url = "https://registry.opentofu.org/v1/providers/${owner}/${repo}/${version}/download/${os}/${arch}";
-      inherit sha256;
-    };
+    pkgs.runCommand "opentofu-fetch-provider-spec" {
+      buildInputs = [pkgs.jq pkgs.curl];
+      outputHashMode = "recursive";
+      outputHashAlgo = "sha256";
+      outputHash = hash;
+    } ''
+      mkdir -p "$out"
+
+      url="https://registry.opentofu.org/v1/providers/${owner}/${repo}/versions"
+      jq -c ".versions[] | select(.version == \"${version}\") | .platforms[]" < <(curl -s "$url") | while read -r p; do
+        os=$(echo "$p" | jq -r .os)
+        arch=$(echo "$p" | jq -r .arch)
+        curl -s "https://registry.opentofu.org/v1/providers/${owner}/${repo}/${version}/download/$os/$arch" -o "$out/''${os}_''${arch}.json"
+      done
+    '';
 
   mkOpentofuProvider = {
     owner,
     repo,
     version,
-    sha256,
+    os ? pkgs.go.GOOS,
+    arch ? pkgs.go.GOARCH,
+    hash,
   }: let
-    spec = builtins.fromJSON (builtins.readFile (fetchProviderSpec {inherit owner repo version sha256;}));
+    specs = fetchProviderSpec {inherit owner repo version hash;};
+    spec = builtins.fromJSON (builtins.readFile "${specs}/${os}_${arch}.json");
   in
     mkTerraformProvider {
       inherit version owner repo;

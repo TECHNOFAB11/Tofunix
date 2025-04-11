@@ -10,13 +10,17 @@
   spec = fullSpec.spec;
 
   convertType = typ:
-    if typ == "string"
-    then "types.str"
-    else if typ == "number"
-    then "types.number"
-    else if typ == "bool"
-    then "types.bool"
-    else "types.unspecified";
+    "(types.either referenceType "
+    + (
+      if typ == "string"
+      then "types.str"
+      else if typ == "number"
+      then "types.number"
+      else if typ == "bool"
+      then "types.bool"
+      else "types.unspecified"
+    )
+    + ")";
   # TODO: list and object support
 
   providerAttributes = lib.concatStrings (lib.mapAttrsToList (name: value: let
@@ -100,6 +104,7 @@
     ''
       {lib, options, config, ...}: let
         inherit (lib) mkOption types;
+        referenceType = types.addCheck types.str (s: lib.hasPrefix "\''${" s && lib.hasSuffix "}" s);
       in {
         config.terraform.required_providers.${provider} = {
           source = "${source}";
