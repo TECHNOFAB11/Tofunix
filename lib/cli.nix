@@ -17,7 +17,7 @@
     "terraform.tfstate"
   ];
 in
-  pkgs.writeShellScriptBin "tofunix" ''
+  (pkgs.writeShellScriptBin "tofunix" ''
     TF_TMP_DIR=$(mktemp -d)
     ln -s ${source} $TF_TMP_DIR
 
@@ -43,4 +43,7 @@ in
     trap cleanup EXIT
 
     ${lib.getExe wrapped} -chdir="$TF_TMP_DIR" "$@"
-  ''
+  '')
+  // {
+    gitlab = import ./gitlab.nix {inherit lib pkgs source wrapped;};
+  }

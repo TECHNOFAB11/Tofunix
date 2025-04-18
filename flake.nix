@@ -201,11 +201,21 @@
           };
         };
 
-        packages = {
+        packages = let
+          lib = pkgs.callPackage ./lib {};
+        in {
           provider = pkgs.callPackage ./generator.nix {
             source = "BunnyWay/bunnynet";
             version = "0.4.1";
           };
+          tofunix = lib.mkCliAio {
+            plugins = [pkgs.terraform-providers.vault];
+            moduleConfig = {ref, ...}: {
+              variable."test".default = "meow";
+              provider.vault."default".address = ref.var."test";
+            };
+          };
+
           testNew = (pkgs.callPackage ./lib {}).generateOptions ["registry.terraform.io/hashicorp/vault@4.7.0"];
           test = pkgs.opentofu.withPlugins (p: [
             p.random

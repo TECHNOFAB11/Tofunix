@@ -84,6 +84,10 @@ in
                     type = types.attrs;
                     default = {};
                   };
+                  backend = mkOption {
+                    type = types.nullOr types.attrs;
+                    default = null;
+                  };
                 };
               };
             };
@@ -161,14 +165,14 @@ in
               );
           in
             filterNonEmptyAttrsets {
-              inherit (config) terraform output variable locals;
+              inherit (config) output variable locals;
+              terraform = filterNullsRecursive config.terraform;
               provider = wrap "provider" false;
               # output = wrap "output" false;
               # variable = wrap "variable" false;
               # local = wrap "local" false;
               resource = wrap "resource" true;
               data = wrap "data" true;
-              # TODO: variables etc.
             };
         })
       ];
