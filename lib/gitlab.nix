@@ -18,7 +18,6 @@
     installPhase = ''
       mkdir -p $out/bin
       ln -s $src $out/bin/gitlab-tofu
-      chmod +x $out/bin/gitlab-tofu
 
       wrapProgram $out/bin/gitlab-tofu --prefix PATH : ${
         lib.makeBinPath [
