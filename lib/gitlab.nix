@@ -25,6 +25,7 @@
           wrapped
           pkgs.libidn2
           pkgs.jq
+          pkgs.curl
         ]
       }
     '';
