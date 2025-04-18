@@ -7,9 +7,10 @@
 }: let
   gitlab-tofu = pkgs.stdenv.mkDerivation {
     name = "gitlab-tofu";
-    src = builtins.fetchurl {
+    src = pkgs.fetchurl {
       url = "https://gitlab.com/components/opentofu/-/raw/356937d000b7839ed717562d1e6d470b946040da/src/gitlab-tofu.sh";
-      sha256 = "sha256:0s3ikgdf1i24xy9bnrb80b5r85ld9hx1n846cwjj9v9ablqnl9a5";
+      sha256 = "sha256-NQCML0ElSzCt4gHfIxDmjduZrPMZ6VKaM0T0QV5N+II=";
+      executable = true;
     };
     nativeBuildInputs = [
       pkgs.makeWrapper
