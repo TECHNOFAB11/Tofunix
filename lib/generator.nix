@@ -44,12 +44,7 @@
   spec.provider.block.attributes);
 
   getAttributes = resourceType: resourceName: block: isData:
-    lib.concatStrings (lib.mapAttrsToList (name: value: let
-      dataExtra =
-        if isData
-        then "data."
-        else "";
-    in
+    lib.concatStrings (lib.mapAttrsToList (name: value:
       # nix
       ''
         ${name} = mkOption {
@@ -57,13 +52,7 @@
             ${value.description or ""}
           ''';
           ${
-          if value.computed or false
-          then ''
-            type = types.str;
-            default = "\''${${dataExtra}${resourceType}.${resourceName}.${name}}";
-            readOnly = true;
-          ''
-          else if value.optional or false
+          if value.optional or value.computed or false
           then ''
             type = types.nullOr ${convertType value.type};
             default = null;
