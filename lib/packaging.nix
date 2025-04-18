@@ -38,18 +38,21 @@
     hash,
   }:
     pkgs.runCommand "opentofu-fetch-provider-spec" {
-      buildInputs = [pkgs.jq pkgs.curl];
+      nativeBuildInputs = with pkgs; [jq curl cacert];
       outputHashMode = "recursive";
       outputHashAlgo = "sha256";
       outputHash = hash;
     } ''
+      set -e
       mkdir -p "$out"
 
       url="https://registry.opentofu.org/v1/providers/${owner}/${repo}/versions"
-      jq -c ".versions[] | select(.version == \"${version}\") | .platforms[]" < <(curl -s "$url") | while read -r p; do
+      platforms=$(curl -fsS "$url" | jq -c ".versions[] | select(.version == \"${version}\") | .platforms[]")
+      echo "$platforms" | while read -r p; do
         os=$(echo "$p" | jq -r .os)
         arch=$(echo "$p" | jq -r .arch)
-        curl -s "https://registry.opentofu.org/v1/providers/${owner}/${repo}/${version}/download/$os/$arch" -o "$out/''${os}_''${arch}.json"
+        echo "Downloading $os/$arch spec"
+        curl -fsS "https://registry.opentofu.org/v1/providers/${owner}/${repo}/${version}/download/$os/$arch" -o "$out/''${os}_''${arch}.json"
       done
     '';
 
