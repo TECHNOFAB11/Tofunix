@@ -57,6 +57,7 @@
                 logo = "simple/opentofu";
                 repo = "simple/gitlab";
               };
+              favicon = "images/favicon.png";
               palette = [
                 {
                   scheme = "default";
