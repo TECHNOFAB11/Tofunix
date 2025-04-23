@@ -9,6 +9,7 @@
         inputs.devenv.flakeModule
         inputs.nix-gitlab-ci.flakeModule
         inputs.treefmt-nix.flakeModule
+        inputs.nix-mkdocs.flakeModule
       ];
       systems = import systems;
       perSystem = {
@@ -42,6 +43,113 @@
           };
         };
 
+        doc = {
+          path = ./docs;
+          deps = pp: [pp.mkdocs-material (pp.callPackage inputs.mkdocs-material-umami {})];
+          config = {
+            site_name = "Tofunix";
+            repo_name = "TECHNOFAB/tofunix";
+            repo_url = "https://gitlab.com/TECHNOFAB/tofunix";
+            theme = {
+              name = "material";
+              features = ["content.code.copy"];
+              icon = {
+                logo = "simple/opentofu";
+                repo = "simple/gitlab";
+              };
+              palette = [
+                {
+                  scheme = "default";
+                  media = "(prefers-color-scheme: light)";
+                  primary = "yellow";
+                  accent = "amber";
+                  toggle = {
+                    icon = "material/brightness-7";
+                    name = "Switch to dark mode";
+                  };
+                }
+                {
+                  scheme = "slate";
+                  media = "(prefers-color-scheme: dark)";
+                  primary = "yellow";
+                  accent = "amber";
+                  toggle = {
+                    icon = "material/brightness-4";
+                    name = "Switch to light mode";
+                  };
+                }
+              ];
+            };
+            plugins = ["search" "material-umami"];
+            nav = [
+              {
+                "Introduction" = "index.md";
+              }
+            ];
+            markdown_extensions = [
+              {
+                "pymdownx.highlight".pygments_lang_class = true;
+              }
+              "pymdownx.inlinehilite"
+              "pymdownx.snippets"
+              "pymdownx.superfences"
+              "fenced_code"
+            ];
+            extra.analytics = {
+              provider = "umami";
+              site_id = "79cb89ba-7008-4121-b94c-aac295dc3215";
+              src = "https://analytics.tf/umami";
+              feedback = {
+                title = "Was this page helpful?";
+                ratings = [
+                  {
+                    icon = "material/thumb-up-outline";
+                    name = "This page is helpful";
+                    data = "good";
+                    note = "Thanks for your feedback!";
+                  }
+                  {
+                    icon = "material/thumb-down-outline";
+                    name = "This page could be improved";
+                    data = "bad";
+                    note = "Thanks for your feedback!";
+                  }
+                ];
+              };
+            };
+          };
+        };
+
+        ci = {
+          stages = ["build" "deploy"];
+          jobs = {
+            "docs" = {
+              stage = "build";
+              script = [
+                # sh
+                ''
+                  nix build .#docs:default
+                  mkdir -p public
+                  cp -r result/. public/
+                ''
+              ];
+              artifacts.paths = ["public"];
+            };
+            "pages" = {
+              nix.enable = false;
+              image = "alpine:latest";
+              stage = "deploy";
+              script = ["true"];
+              artifacts.paths = ["public"];
+              rules = [
+                {
+                  "if" = "$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH";
+                }
+              ];
+            };
+          };
+        };
+
         packages = let
           lib = pkgs.callPackage ./lib {};
         in {
@@ -70,5 +178,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-gitlab-ci.url = "gitlab:TECHNOFAB/nix-gitlab-ci?dir=lib";
+    nix-mkdocs.url = "gitlab:TECHNOFAB/nixmkdocs?dir=lib";
+    mkdocs-material-umami.url = "gitlab:technofab/mkdocs-material-umami";
   };
 }

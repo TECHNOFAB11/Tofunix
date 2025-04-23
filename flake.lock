@@ -174,6 +174,21 @@
         "type": "github"
       }
     },
+    "mkdocs-material-umami": {
+      "locked": {
+        "lastModified": 1745163020,
+        "narHash": "sha256-eYKx9b50bRbTHSbGusEB3HECJwZvLshW1SavFkN0foE=",
+        "owner": "technofab",
+        "repo": "mkdocs-material-umami",
+        "rev": "e09ad45e921b8c1a30a47d599dcb8e8cb4468200",
+        "type": "gitlab"
+      },
+      "original": {
+        "owner": "technofab",
+        "repo": "mkdocs-material-umami",
+        "type": "gitlab"
+      }
+    },
     "nix": {
       "inputs": {
         "flake-compat": [
@@ -221,6 +236,23 @@
         "dir": "lib",
         "owner": "TECHNOFAB",
         "repo": "nix-gitlab-ci",
+        "type": "gitlab"
+      }
+    },
+    "nix-mkdocs": {
+      "locked": {
+        "dir": "lib",
+        "lastModified": 1745175318,
+        "narHash": "sha256-eJOTw3SK4psqBPP2hNJ4D/13/oi/FLoM0tYKoCGVFP8=",
+        "owner": "TECHNOFAB",
+        "repo": "nixmkdocs",
+        "rev": "6d6e0139060c896ae14de4b9c82335655a384643",
+        "type": "gitlab"
+      },
+      "original": {
+        "dir": "lib",
+        "owner": "TECHNOFAB",
+        "repo": "nixmkdocs",
         "type": "gitlab"
       }
     },
@@ -284,33 +316,14 @@
         "type": "github"
       }
     },
-    "ntp-bin": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1732755285,
-        "narHash": "sha256-Scm7maQnoElnt7jyYN9psHs6sI1ySbe1c/VAo5+7ydU=",
-        "owner": "nix-community",
-        "repo": "nixpkgs-terraform-providers-bin",
-        "rev": "9dba1234ff841cfbe3acb7cc0b800386aee6ac73",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nix-community",
-        "repo": "nixpkgs-terraform-providers-bin",
-        "type": "github"
-      }
-    },
     "root": {
       "inputs": {
         "devenv": "devenv",
         "flake-parts": "flake-parts_2",
+        "mkdocs-material-umami": "mkdocs-material-umami",
         "nix-gitlab-ci": "nix-gitlab-ci",
+        "nix-mkdocs": "nix-mkdocs",
         "nixpkgs": "nixpkgs_3",
-        "ntp-bin": "ntp-bin",
         "systems": "systems",
         "treefmt-nix": "treefmt-nix"
       }
