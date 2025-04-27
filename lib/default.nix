@@ -38,7 +38,7 @@ rec {
       generated);
     commands = builtins.concatStringsSep "\n" (
       map (
-        gen: "ln -s ${gen.drv} $out/${gen.spec.name}-${gen.spec.version}.nix"
+        gen: "cp ${gen.drv} $out/${gen.spec.name}-${gen.spec.version}.nix"
       )
       generated
     );
