@@ -176,11 +176,11 @@
     },
     "mkdocs-material-umami": {
       "locked": {
-        "lastModified": 1745163020,
-        "narHash": "sha256-eYKx9b50bRbTHSbGusEB3HECJwZvLshW1SavFkN0foE=",
+        "lastModified": 1745840856,
+        "narHash": "sha256-1Ad1JTMQMP6YsoIKAA+SBCE15qWrYkGue9/lXOLnu9I=",
         "owner": "technofab",
         "repo": "mkdocs-material-umami",
-        "rev": "e09ad45e921b8c1a30a47d599dcb8e8cb4468200",
+        "rev": "3ac9b194450f6b779c37b8d16fec640198e5cd0a",
         "type": "gitlab"
       },
       "original": {

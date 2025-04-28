@@ -16,7 +16,6 @@
         pkgs,
         lib,
         config,
-        inputs',
         ...
       }: {
         treefmt = {
@@ -25,6 +24,13 @@
             alejandra.enable = true;
             mdformat.enable = true;
           };
+          settings.formatter.mdformat.command = let
+            pkg = pkgs.python3.withPackages (p: [
+              p.mdformat
+              p.mdformat-mkdocs
+            ]);
+          in
+            lib.mkForce "${pkg}/bin/mdformat";
         };
 
         devenv.shells.default = {
@@ -50,9 +56,10 @@
             site_name = "Tofunix";
             repo_name = "TECHNOFAB/tofunix";
             repo_url = "https://gitlab.com/TECHNOFAB/tofunix";
+            edit_uri = "edit/main/docs/";
             theme = {
               name = "material";
-              features = ["content.code.copy"];
+              features = ["content.code.copy" "content.action.edit"];
               icon = {
                 logo = "simple/opentofu";
                 repo = "simple/gitlab";
@@ -83,9 +90,7 @@
             };
             plugins = ["search" "material-umami"];
             nav = [
-              {
-                "Introduction" = "index.md";
-              }
+              {"Introduction" = "index.md";}
             ];
             markdown_extensions = [
               {
@@ -95,11 +100,13 @@
               "pymdownx.snippets"
               "pymdownx.superfences"
               "fenced_code"
+              "admonition"
             ];
             extra.analytics = {
               provider = "umami";
               site_id = "79cb89ba-7008-4121-b94c-aac295dc3215";
               src = "https://analytics.tf/umami";
+              domains = "tofunix.projects.tf";
               feedback = {
                 title = "Was this page helpful?";
                 ratings = [
