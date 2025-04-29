@@ -39,13 +39,12 @@
             opentofu
           ];
 
-          pre-commit = {
-            hooks = {
-              treefmt = {
-                enable = true;
-                packageOverrides.treefmt = config.treefmt.build.wrapper;
-              };
+          pre-commit.hooks = {
+            treefmt = {
+              enable = true;
+              packageOverrides.treefmt = config.treefmt.build.wrapper;
             };
+            convco.enable = true;
           };
         };
 

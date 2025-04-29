@@ -64,7 +64,7 @@ rec {
     plugins,
     moduleConfig,
   }:
-    (import ./cli.nix {inherit lib pkgs;}) {
+    mkCli {
       inherit plugins;
       module = mkModule {
         sources = plugins;
