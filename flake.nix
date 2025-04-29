@@ -65,10 +65,8 @@
             theme = {
               name = "material";
               features = ["content.code.copy" "content.action.edit"];
-              icon = {
-                logo = "simple/opentofu";
-                repo = "simple/gitlab";
-              };
+              icon.repo = "simple/gitlab";
+              logo = "images/logo.png";
               favicon = "images/favicon.png";
               palette = [
                 {
@@ -96,6 +94,10 @@
             plugins = ["search" "material-umami"];
             nav = [
               {"Introduction" = "index.md";}
+              {"Usage" = "usage.md";}
+              {"Pre-Commit" = "pre_commit.md";}
+              {"GitLab Integration" = "gitlab_integration.md";}
+              {"Reference" = "reference.md";}
             ];
             markdown_extensions = [
               {
