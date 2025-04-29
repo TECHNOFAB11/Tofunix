@@ -12,6 +12,12 @@
         inputs.nix-mkdocs.flakeModule
       ];
       systems = import systems;
+      flake = {
+        templates."default" = {
+          path = ./template;
+          description = "Fully featured template/example";
+        };
+      };
       perSystem = {
         pkgs,
         lib,
