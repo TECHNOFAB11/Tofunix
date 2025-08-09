@@ -2,8 +2,8 @@
   lib ? pkgs.lib,
   pkgs,
   ...
-}:
-rec {
+}: let
+  inherit (lib) evalModules;
   # generates the terraform provider spec (json schema) for multiple sources
   generateSpec =
     # sources: list[str "<org>/<provider>@<version>"], example: ["hashicorp/vault@0.0.1"]
@@ -55,9 +55,28 @@ rec {
       nixpkgs-fmt $out/default.nix
     '';
 
-  mkModule = import ./module.nix {
-    inherit generateOptions lib pkgs;
-  };
+  module = import ./module.nix;
+  mkModule = {
+    sources ? [],
+    moduleConfig,
+    ...
+  }: let
+    imports =
+      if (builtins.length sources) != 0
+      then ["${generateOptions sources}/default.nix"]
+      else [];
+  in
+    evalModules {
+      modules =
+        imports
+        ++ [
+          moduleConfig
+          module
+          {
+            _module.args.pkgs = pkgs;
+          }
+        ];
+    };
 
   mkCli = import ./cli.nix {inherit lib pkgs;};
   mkCliAio = {
@@ -72,8 +91,23 @@ rec {
       };
     };
 
-  utils = import ./utils.nix {
-    inherit lib;
-  };
+  utils = import ./utils.nix {inherit lib;};
+  packaging = import ./packaging.nix {inherit lib pkgs;};
+in {
+  inherit
+    generateSpec
+    generateOptionsForProvider
+    generateOptions
+    module
+    mkModule
+    mkCli
+    mkCliAio
+    utils
+    ;
+  inherit
+    (packaging)
+    mkTerraformProvider
+    fetchProviderSpec
+    mkOpentofuProvider
+    ;
 }
-// (import ./packaging.nix {inherit lib pkgs;})

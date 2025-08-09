@@ -34,9 +34,7 @@
         "flake-compat": "flake-compat",
         "git-hooks": "git-hooks",
         "nix": "nix",
-        "nixpkgs": [
-          "nixpkgs"
-        ]
+        "nixpkgs": "nixpkgs_3"
       },
       "locked": {
         "lastModified": 1732585607,
@@ -178,13 +176,13 @@
       "locked": {
         "lastModified": 1745840856,
         "narHash": "sha256-1Ad1JTMQMP6YsoIKAA+SBCE15qWrYkGue9/lXOLnu9I=",
-        "owner": "technofab",
+        "owner": "TECHNOFAB",
         "repo": "mkdocs-material-umami",
         "rev": "3ac9b194450f6b779c37b8d16fec640198e5cd0a",
         "type": "gitlab"
       },
       "original": {
-        "owner": "technofab",
+        "owner": "TECHNOFAB",
         "repo": "mkdocs-material-umami",
         "type": "gitlab"
       }
@@ -225,17 +223,17 @@
     "nix-gitlab-ci": {
       "locked": {
         "dir": "lib",
-        "lastModified": 1743798155,
-        "narHash": "sha256-R2n1ZpdubTzNIy41iHeuHY9ocroUDHegQtC3vN/3sUw=",
+        "lastModified": 1749124633,
+        "narHash": "sha256-vgYHrbAFRfgNYysW74Eam/S7KruYWMLCHG4U32xgHKY=",
         "owner": "TECHNOFAB",
         "repo": "nix-gitlab-ci",
-        "rev": "b193df30f4a61532f4a056cd759263f2ce453ead",
+        "rev": "f121b10dc9a7417906a886154e3065410a72462d",
         "type": "gitlab"
       },
       "original": {
         "dir": "lib",
         "owner": "TECHNOFAB",
-        "ref": "feat/v2",
+        "ref": "2.1.0",
         "repo": "nix-gitlab-ci",
         "type": "gitlab"
       }
@@ -243,16 +241,17 @@
     "nix-mkdocs": {
       "locked": {
         "dir": "lib",
-        "lastModified": 1745175318,
-        "narHash": "sha256-eJOTw3SK4psqBPP2hNJ4D/13/oi/FLoM0tYKoCGVFP8=",
+        "lastModified": 1754753501,
+        "narHash": "sha256-k7KEGQ7qejmwrSXVSvZ9zVD1H+ZtNm0I5fmCVmZVi+4=",
         "owner": "TECHNOFAB",
         "repo": "nixmkdocs",
-        "rev": "6d6e0139060c896ae14de4b9c82335655a384643",
+        "rev": "aba4f26f320b15043101824b65e72058ecab296f",
         "type": "gitlab"
       },
       "original": {
         "dir": "lib",
         "owner": "TECHNOFAB",
+        "ref": "v1.0.0",
         "repo": "nixmkdocs",
         "type": "gitlab"
       }
@@ -303,6 +302,22 @@
     },
     "nixpkgs_3": {
       "locked": {
+        "lastModified": 1754299112,
+        "narHash": "sha256-WJGsD84OzvRpz2zTMBM5kFacT/3jhZ7Pc8nzgB4z3uU=",
+        "owner": "cachix",
+        "repo": "devenv-nixpkgs",
+        "rev": "16c21c9f5c6fb978466e91182a248dd8ca1112ac",
+        "type": "github"
+      },
+      "original": {
+        "owner": "cachix",
+        "ref": "rolling",
+        "repo": "devenv-nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_4": {
+      "locked": {
         "lastModified": 1732521221,
         "narHash": "sha256-2ThgXBUXAE1oFsVATK1ZX9IjPcS4nKFOAjhPNKuiMn0=",
         "owner": "nixos",
@@ -317,6 +332,39 @@
         "type": "github"
       }
     },
+    "nixpkgs_5": {
+      "locked": {
+        "lastModified": 1754340878,
+        "narHash": "sha256-lgmUyVQL9tSnvvIvBp7x1euhkkCho7n3TMzgjdvgPoU=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "cab778239e705082fe97bb4990e0d24c50924c04",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "ref": "nixpkgs-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixtest": {
+      "locked": {
+        "dir": "lib",
+        "lastModified": 1753957623,
+        "narHash": "sha256-kdImwKx57N0QL8HPUUb5ADwXFgSjaNOk39b/eKlzyTo=",
+        "owner": "TECHNOFAB",
+        "repo": "nixtest",
+        "rev": "22b43c9fe83be73c3f0648bbb54bc3c1cf7f96df",
+        "type": "gitlab"
+      },
+      "original": {
+        "dir": "lib",
+        "owner": "TECHNOFAB",
+        "repo": "nixtest",
+        "type": "gitlab"
+      }
+    },
     "root": {
       "inputs": {
         "devenv": "devenv",
@@ -324,7 +372,8 @@
         "mkdocs-material-umami": "mkdocs-material-umami",
         "nix-gitlab-ci": "nix-gitlab-ci",
         "nix-mkdocs": "nix-mkdocs",
-        "nixpkgs": "nixpkgs_3",
+        "nixpkgs": "nixpkgs_4",
+        "nixtest": "nixtest",
         "systems": "systems",
         "treefmt-nix": "treefmt-nix"
       }
@@ -346,16 +395,14 @@
     },
     "treefmt-nix": {
       "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
+        "nixpkgs": "nixpkgs_5"
       },
       "locked": {
-        "lastModified": 1732643199,
-        "narHash": "sha256-uI7TXEb231o8dkwB5AUCecx3AQtosRmL6hKgnckvjps=",
+        "lastModified": 1754492133,
+        "narHash": "sha256-B+3g9+76KlGe34Yk9za8AF3RL+lnbHXkLiVHLjYVOAc=",
         "owner": "numtide",
         "repo": "treefmt-nix",
-        "rev": "84637a7ab04179bdc42aa8fd0af1909fba76ad0c",
+        "rev": "1298185c05a56bff66383a20be0b41a307f52228",
         "type": "github"
       },
       "original": {

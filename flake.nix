@@ -19,8 +19,9 @@
         };
       };
       perSystem = {
-        pkgs,
         lib,
+        pkgs,
+        self',
         config,
         ...
       }: {
@@ -56,7 +57,11 @@
 
         doc = {
           path = ./docs;
-          deps = pp: [pp.mkdocs-material (pp.callPackage inputs.mkdocs-material-umami {})];
+          deps = pp: [
+            pp.mkdocs-material
+            pp.mkdocs-macros
+            (pp.callPackage inputs.mkdocs-material-umami {})
+          ];
           config = {
             site_name = "Tofunix";
             repo_name = "TECHNOFAB/tofunix";
@@ -91,13 +96,22 @@
                 }
               ];
             };
-            plugins = ["search" "material-umami"];
+            plugins = [
+              "search"
+              "material-umami"
+              {
+                macros = {
+                  include_dir = self'.packages.optionsDocs;
+                };
+              }
+            ];
             nav = [
               {"Introduction" = "index.md";}
               {"Usage" = "usage.md";}
               {"Pre-Commit" = "pre_commit.md";}
               {"GitLab Integration" = "gitlab_integration.md";}
               {"Reference" = "reference.md";}
+              {"Options" = "options.md";}
             ];
             markdown_extensions = [
               {
@@ -166,15 +180,36 @@
         };
 
         packages = let
-          lib = pkgs.callPackage ./lib {};
-        in {
-          tofunix = lib.mkCliAio {
+          tflib = import ./lib {inherit lib pkgs;};
+          doclib = inputs.nix-mkdocs.lib {inherit lib pkgs;};
+        in rec {
+          tofunix = tflib.mkCliAio {
             plugins = [pkgs.terraform-providers.vault];
             moduleConfig = {ref, ...}: {
               variable."test".default = "meow";
               provider.vault."default".address = ref.var."test";
             };
           };
+          optionsDoc = doclib.mkOptionDocs {
+            module = {
+              imports = [
+                tflib.module
+                {
+                  _module.args.pkgs = pkgs;
+                }
+              ];
+            };
+            roots = [
+              {
+                url = "https://gitlab.com/TECHNOFAB/tofunix/-/blob/main/lib";
+                path = toString ./lib;
+              }
+            ];
+          };
+          optionsDocs = pkgs.runCommand "options-docs" {} ''
+            mkdir -p $out
+            ln -s ${optionsDoc} $out/options.md
+          '';
         };
       };
     };
@@ -184,16 +219,10 @@
 
     flake-parts.url = "github:hercules-ci/flake-parts";
     systems.url = "github:nix-systems/default-linux";
-    devenv = {
-      url = "github:cachix/devenv";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    treefmt-nix = {
-      url = "github:numtide/treefmt-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    nix-gitlab-ci.url = "gitlab:TECHNOFAB/nix-gitlab-ci/feat/v2?dir=lib";
-    nix-mkdocs.url = "gitlab:TECHNOFAB/nixmkdocs?dir=lib";
-    mkdocs-material-umami.url = "gitlab:technofab/mkdocs-material-umami";
+    devenv.url = "github:cachix/devenv";
+    treefmt-nix.url = "github:numtide/treefmt-nix";
+    nix-gitlab-ci.url = "gitlab:TECHNOFAB/nix-gitlab-ci/2.1.0?dir=lib";
+    nix-mkdocs.url = "gitlab:TECHNOFAB/nixmkdocs/v1.0.0?dir=lib";
+    mkdocs-material-umami.url = "gitlab:TECHNOFAB/mkdocs-material-umami";
   };
 }

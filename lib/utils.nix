@@ -1,4 +1,6 @@
 {lib, ...}: let
+  inherit (lib) removePrefix removeSuffix toList;
+
   toHCL = val:
     if builtins.isAttrs val
     then
@@ -13,10 +15,10 @@
     then "\"${val}\""
     else val;
 
-  removeBraces = input: lib.removePrefix "\${" (lib.removeSuffix "}" input);
+  removeBraces = input: removePrefix "\${" (removeSuffix "}" input);
   wrapInBraces = input: "\${${input}}";
   inject = func: inputs: let
-    inputsNonNull = builtins.filter (el: el != null) (lib.toList inputs);
+    inputsNonNull = builtins.filter (el: el != null) (toList inputs);
     inputsStringified = map (el: toString el) inputsNonNull;
     hasBraces = builtins.any (el: lib.hasPrefix "\${" el) inputsStringified;
     params = builtins.map (el: removeBraces el) inputsStringified;

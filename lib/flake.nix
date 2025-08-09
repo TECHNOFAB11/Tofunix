@@ -1,5 +1,5 @@
 {
   outputs = _: {
-    lib = ./default.nix;
+    lib = import ./.;
   };
 }

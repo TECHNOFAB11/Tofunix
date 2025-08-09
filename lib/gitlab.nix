@@ -5,6 +5,8 @@
   wrapped,
   ...
 }: let
+  inherit (lib) makeBinPath getExe;
+
   gitlab-tofu = pkgs.stdenv.mkDerivation {
     name = "gitlab-tofu";
     src = pkgs.fetchurl {
@@ -21,7 +23,7 @@
       ln -s $src $out/bin/gitlab-tofu
 
       wrapProgram $out/bin/gitlab-tofu --prefix PATH : ${
-        lib.makeBinPath [
+        makeBinPath [
           wrapped
           pkgs.libidn2
           pkgs.jq
@@ -35,5 +37,5 @@ in
   pkgs.writeShellScriptBin "gitlab-tofunix" ''
     ln -s ${source} main.tf.json
     trap 'rm -f main.tf.json' EXIT
-    ${lib.getExe gitlab-tofu} "$@"
+    ${getExe gitlab-tofu} "$@"
   ''

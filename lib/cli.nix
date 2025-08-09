@@ -8,6 +8,8 @@
   plugins ? [],
   ...
 }: let
+  inherit (lib) getExe;
+
   wrapped = tf-pkg.withPlugins (_: plugins);
   source = module.config.finalPackage;
   # TODO: check if more are needed and if lockfile is really needed
@@ -42,7 +44,7 @@ in
 
     trap cleanup EXIT
 
-    ${lib.getExe wrapped} -chdir="$TF_TMP_DIR" "$@"
+    ${getExe wrapped} -chdir="$TF_TMP_DIR" "$@"
   '')
   // {
     tfjson = source;
