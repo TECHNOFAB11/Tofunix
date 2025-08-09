@@ -41,7 +41,7 @@ Create a `my-infra.nix` file:
 {
   inputs.tofunix.url = "gitlab:TECHNOFAB/tofunix?dir=lib";
   # perSystem
-  # tofunix_lib = inputs.tofunix.lib { inherit pkgs lib; };
+  # tofunix-lib = inputs.tofunix.lib { inherit pkgs lib; };
   packages.tofunix = tofunix-lib.mkCliAio {
     plugins = [
       (tofunix-lib.mkOpentofuProvider {
