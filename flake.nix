@@ -150,7 +150,7 @@
         };
 
         ci = {
-          stages = ["build" "deploy"];
+          stages = ["test" "build" "deploy"];
           jobs = {
             "test:lib" = {
               stage = "test";
