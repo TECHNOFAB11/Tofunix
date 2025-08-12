@@ -5,6 +5,8 @@
   sources, # ["<org>/<provider>@<version>"]
   ...
 }: let
+  inherit (lib) splitString removePrefix toLower replaceStrings;
+
   sourcesArePackages = !builtins.isString (builtins.head sources);
   origSources = sources;
   _sources =
@@ -12,14 +14,14 @@
     then (map (s: "${s.provider-source-address}@${s.version}") sources)
     else sources;
 
-  hasRegistry = source: builtins.length (lib.splitString "/" source) == 3;
+  hasRegistry = source: builtins.length (splitString "/" source) == 3;
   registry = source:
     if hasRegistry source
     then builtins.head (builtins.match "(.*)/.*/.*$" source)
     else "";
-  removeRegistry = source: lib.removePrefix ((registry source) + "/") source;
+  removeRegistry = source: removePrefix ((registry source) + "/") source;
   removeVersion = source: builtins.head (builtins.match "(.*)@.*$" source);
-  cleanName = source: lib.toLower (lib.replaceStrings ["/"] ["-"] (lib.replaceStrings ["--"] ["-"] source));
+  cleanName = source: toLower (replaceStrings ["/"] ["-"] (replaceStrings ["--"] ["-"] source));
   getProvider = source: builtins.head (builtins.match ".*/(.*)$" source);
   getVersion = source: builtins.head (builtins.match ".*@(.*)$" source);
 

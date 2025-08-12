@@ -1,11 +1,11 @@
 {lib, ...}: let
-  inherit (lib) removePrefix removeSuffix toList;
+  inherit (lib) removePrefix removeSuffix toList concatStringsSep;
 
   toHCL = val:
     if builtins.isAttrs val
     then
       "{"
-      + (builtins.concatStringsSep "," (
+      + (concatStringsSep "," (
         builtins.map (
           key: "${key} = ${toHCL (builtins.getAttr key val)}"
         ) (builtins.attrNames val)
@@ -22,7 +22,7 @@
     inputsStringified = map (el: toString el) inputsNonNull;
     hasBraces = builtins.any (el: lib.hasPrefix "\${" el) inputsStringified;
     params = builtins.map (el: removeBraces el) inputsStringified;
-    result = "${func}(${builtins.concatStringsSep ", " params})";
+    result = "${func}(${concatStringsSep ", " params})";
   in
     if hasBraces
     then wrapInBraces result
@@ -49,7 +49,7 @@ in {
   format = spec: values: inject "format" [spec] ++ values;
   formatlist = spec: values: inject "formatlist" [spec] ++ values;
   indent = num_spaces: string: inject "indent" [num_spaces string];
-  join = separator: list: inject "join" [separator list];
+  join = separator: list: inject "join" [separator "[${concatStringsSep ", " list}]"];
   lower = input: inject "lower" [input];
   regex = pattern: string: inject "regex" [pattern string];
   regexall = pattern: string: inject "regexall" [pattern string];

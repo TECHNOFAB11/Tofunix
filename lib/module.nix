@@ -61,7 +61,16 @@ in {
       type = types.attrs;
       default = {};
     };
+    data = mkOption {
+      type = types.attrs;
+      default = {};
+    };
+    resource = mkOption {
+      type = types.attrs;
+      default = {};
+    };
     terraform = mkOption {
+      default = {};
       type = types.submodule {
         options = {
           required_providers = mkOption {
@@ -139,13 +148,13 @@ in {
                 map (val: let
                   res = builtins.removeAttrs val computedAttrs;
                 in
-                  if nest
+                  if nest && val ? _name
                   then {${val._name} = res;}
                   else res)
                 values
               )
         )
-        config.${field}
+        config.${field} or {}
       );
   in
     filterNonEmptyAttrsets {

@@ -46,7 +46,7 @@
             opentofu
           ];
 
-          pre-commit.hooks = {
+          git-hooks.hooks = {
             treefmt = {
               enable = true;
               packageOverrides.treefmt = config.treefmt.build.wrapper;
@@ -152,6 +152,17 @@
         ci = {
           stages = ["build" "deploy"];
           jobs = {
+            "test:lib" = {
+              stage = "test";
+              script = [
+                "nix run .#tests -- --junit=junit.xml"
+              ];
+              allow_failure = true;
+              artifacts = {
+                when = "always";
+                reports.junit = "junit.xml";
+              };
+            };
             "docs" = {
               stage = "build";
               script = [
@@ -181,8 +192,15 @@
 
         packages = let
           tflib = import ./lib {inherit lib pkgs;};
+          ntlib = inputs.nixtest.lib {inherit lib pkgs;};
           doclib = inputs.nix-mkdocs.lib {inherit lib pkgs;};
         in rec {
+          tests = ntlib.mkNixtest {
+            modules = ntlib.autodiscover {dir = ./tests;};
+            args = {
+              inherit pkgs tflib ntlib;
+            };
+          };
           tofunix = tflib.mkCliAio {
             plugins = [pkgs.terraform-providers.vault];
             moduleConfig = {ref, ...}: {
@@ -222,6 +240,7 @@
     devenv.url = "github:cachix/devenv";
     treefmt-nix.url = "github:numtide/treefmt-nix";
     nix-gitlab-ci.url = "gitlab:TECHNOFAB/nix-gitlab-ci/2.1.0?dir=lib";
+    nixtest.url = "gitlab:TECHNOFAB/nixtest?dir=lib";
     nix-mkdocs.url = "gitlab:TECHNOFAB/nixmkdocs/v1.0.0?dir=lib";
     mkdocs-material-umami.url = "gitlab:TECHNOFAB/mkdocs-material-umami";
   };

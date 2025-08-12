@@ -1,0 +1,71 @@
+{
+  pkgs,
+  tflib,
+  ntlib,
+  ...
+}: {
+  suites."CLI" = {
+    pos = __curPos;
+    tests = [
+      {
+        name = "mkCli generates a valid wrapper script";
+        type = "script";
+        script = let
+          cli = tflib.mkCli {
+            tf-pkg = pkgs.opentofu;
+            module = tflib.mkModule {moduleConfig = {};};
+          };
+          cliScript = "${cli}/bin/tofunix";
+        in
+          # sh
+          ''
+            ${ntlib.helpers.scriptHelpers}
+            assert "-x ${cliScript}" "CLI script should be executable"
+            assert_file_contains "${cliScript}" "mktemp -d" "should create a temporary directory"
+            assert_file_contains "${cliScript}" "trap cleanup EXIT" "should set up a cleanup trap"
+            assert_file_contains "${cliScript}" "-chdir=" "should use -chdir with the temp dir"
+            assert_file_contains "${cliScript}" "${pkgs.opentofu}/bin/tofu" "should call the correct opentofu binary"
+          '';
+      }
+      {
+        name = "mkCliAio generates a valid all-in-one wrapper";
+        type = "script";
+        script = let
+          cli = tflib.mkCliAio {
+            plugins = [];
+            moduleConfig = {
+              variable.foo.default = "bar";
+            };
+          };
+          cliScript = "${cli}/bin/tofunix";
+        in
+          # sh
+          ''
+            ${ntlib.helpers.scriptHelpers}
+            assert "-x ${cliScript}" "CLI script should be executable"
+            assert_file_contains "${cliScript}" "ln -s" "should symlink the generated config"
+            assert_file_contains "${cliScript}" "main.tf.json" "should reference the generated json config"
+          '';
+      }
+      {
+        name = "GitLab CI wrapper generation";
+        type = "script";
+        script = let
+          cli = tflib.mkCli {
+            module = tflib.mkModule {moduleConfig = {};};
+          };
+          gitlabCli = cli.gitlab;
+          cliScript = "${gitlabCli}/bin/gitlab-tofunix";
+        in
+          # sh
+          ''
+            ${ntlib.helpers.scriptHelpers}
+            assert "-x ${cliScript}" "GitLab CLI script should be executable"
+            assert_file_contains "${cliScript}" "ln -s .* main.tf.json" "should symlink config to main.tf.json"
+            assert_file_contains "${cliScript}" "trap 'rm -f main.tf.json' EXIT" "should clean up the symlink"
+            assert_file_contains "${cliScript}" "/bin/gitlab-tofu" "should call the gitlab-tofu helper"
+          '';
+      }
+    ];
+  };
+}
