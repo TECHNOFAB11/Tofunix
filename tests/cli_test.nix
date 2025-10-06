@@ -19,6 +19,7 @@
         in
           # sh
           ''
+            ${ntlib.helpers.path [pkgs.gnugrep]}
             ${ntlib.helpers.scriptHelpers}
             assert "-x ${cliScript}" "CLI script should be executable"
             assert_file_contains "${cliScript}" "mktemp -d" "should create a temporary directory"
@@ -41,6 +42,7 @@
         in
           # sh
           ''
+            ${ntlib.helpers.path [pkgs.gnugrep]}
             ${ntlib.helpers.scriptHelpers}
             assert "-x ${cliScript}" "CLI script should be executable"
             assert_file_contains "${cliScript}" "ln -s" "should symlink the generated config"
@@ -59,6 +61,7 @@
         in
           # sh
           ''
+            ${ntlib.helpers.path [pkgs.gnugrep]}
             ${ntlib.helpers.scriptHelpers}
             assert "-x ${cliScript}" "GitLab CLI script should be executable"
             assert_file_contains "${cliScript}" "ln -s .* main.tf.json" "should symlink config to main.tf.json"

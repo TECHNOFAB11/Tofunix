@@ -311,11 +311,11 @@
     "nixtest": {
       "locked": {
         "dir": "lib",
-        "lastModified": 1753957623,
-        "narHash": "sha256-kdImwKx57N0QL8HPUUb5ADwXFgSjaNOk39b/eKlzyTo=",
+        "lastModified": 1759340550,
+        "narHash": "sha256-EH9heYb/nHHzCpUGQGqVQnuyVGQ7D6MVMgJmzNvvmJ8=",
         "owner": "TECHNOFAB",
         "repo": "nixtest",
-        "rev": "22b43c9fe83be73c3f0648bbb54bc3c1cf7f96df",
+        "rev": "5a7053afcbb211b9cf8fe87f7892bb9f6b76b678",
         "type": "gitlab"
       },
       "original": {
