@@ -55,56 +55,36 @@
           };
         };
 
-        doc = {
+        docs."default".config = {
           path = ./docs;
-          deps = pp: [
-            pp.mkdocs-material
-            pp.mkdocs-macros
-            (pp.callPackage inputs.mkdocs-material-umami {})
-          ];
+          material = {
+            enable = true;
+            colors = {
+              primary = "yellow";
+              accent = "amber";
+            };
+            umami = {
+              enable = true;
+              src = "https://analytics.tf/umami";
+              siteId = "79cb89ba-7008-4121-b94c-aac295dc3215";
+              domains = ["tofunix.projects.tf"];
+            };
+          };
+          macros = {
+            enable = true;
+            includeDir = toString self'.packages.optionsDocs;
+          };
           config = {
             site_name = "Tofunix";
+            site_url = "https://tofunix.projects.tf";
             repo_name = "TECHNOFAB/tofunix";
             repo_url = "https://gitlab.com/TECHNOFAB/tofunix";
-            edit_uri = "edit/main/docs/";
+            extra_css = ["style.css"];
             theme = {
-              name = "material";
-              features = ["content.code.copy" "content.action.edit"];
               icon.repo = "simple/gitlab";
-              logo = "images/logo.png";
-              favicon = "images/favicon.png";
-              palette = [
-                {
-                  scheme = "default";
-                  media = "(prefers-color-scheme: light)";
-                  primary = "yellow";
-                  accent = "amber";
-                  toggle = {
-                    icon = "material/brightness-7";
-                    name = "Switch to dark mode";
-                  };
-                }
-                {
-                  scheme = "slate";
-                  media = "(prefers-color-scheme: dark)";
-                  primary = "yellow";
-                  accent = "amber";
-                  toggle = {
-                    icon = "material/brightness-4";
-                    name = "Switch to light mode";
-                  };
-                }
-              ];
+              logo = "images/logo.svg";
+              favicon = "images/logo.svg";
             };
-            plugins = [
-              "search"
-              "material-umami"
-              {
-                macros = {
-                  include_dir = self'.packages.optionsDocs;
-                };
-              }
-            ];
             nav = [
               {"Introduction" = "index.md";}
               {"Usage" = "usage.md";}
@@ -123,29 +103,6 @@
               "fenced_code"
               "admonition"
             ];
-            extra.analytics = {
-              provider = "umami";
-              site_id = "79cb89ba-7008-4121-b94c-aac295dc3215";
-              src = "https://analytics.tf/umami";
-              domains = "tofunix.projects.tf";
-              feedback = {
-                title = "Was this page helpful?";
-                ratings = [
-                  {
-                    icon = "material/thumb-up-outline";
-                    name = "This page is helpful";
-                    data = "good";
-                    note = "Thanks for your feedback!";
-                  }
-                  {
-                    icon = "material/thumb-down-outline";
-                    name = "This page could be improved";
-                    data = "bad";
-                    note = "Thanks for your feedback!";
-                  }
-                ];
-              };
-            };
           };
         };
 
@@ -241,7 +198,7 @@
     treefmt-nix.url = "github:numtide/treefmt-nix";
     nix-gitlab-ci.url = "gitlab:TECHNOFAB/nix-gitlab-ci/2.1.0?dir=lib";
     nixtest.url = "gitlab:TECHNOFAB/nixtest?dir=lib";
-    nix-mkdocs.url = "gitlab:TECHNOFAB/nixmkdocs/v1.0.0?dir=lib";
+    nix-mkdocs.url = "gitlab:TECHNOFAB/nixmkdocs?dir=lib";
     mkdocs-material-umami.url = "gitlab:TECHNOFAB/mkdocs-material-umami";
   };
 }
