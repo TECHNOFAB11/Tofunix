@@ -5,30 +5,41 @@
   lib,
   ...
 }: let
-  inherit (lib) mkOption types mapAttrs mapAttrsToList;
-  filterNonEmptyAttrsets = attrs:
-    builtins.removeAttrs attrs (builtins.filter (name: builtins.getAttr name attrs == {}) (builtins.attrNames attrs));
-  filterNullsRecursive = value:
-    if builtins.isAttrs value
-    then
-      # Process attribute set
-      builtins.listToAttrs (builtins.filter (
-          attr:
-            attr.value != null
-        ) (mapAttrsToList (
-            name: attrValue: {
-              name = name;
-              value = filterNullsRecursive attrValue;
-            }
-          )
-          value))
+  inherit (lib) mkOptionType isType literalExpression mkOption types filterAttrs mapAttrs mapAttrsToList;
+
+  unsetType = mkOptionType {
+    name = "unset";
+    description = "unset";
+    descriptionClass = "noun";
+    check = value: true;
+  };
+  unset = {
+    _type = "unset";
+  };
+  isUnset = isType "unset";
+  unsetOr = typ:
+    (types.either unsetType typ)
+    // {
+      inherit (typ) description getSubOptions;
+    };
+
+  filterUnset = value:
+    if builtins.isAttrs value && !builtins.hasAttr "_type" value
+    then let
+      filteredAttrs = builtins.mapAttrs (n: v: filterUnset v) value;
+    in
+      filterAttrs (name: value: (!isUnset value)) filteredAttrs
     else if builtins.isList value
-    then
-      # Process list
-      builtins.filter (x: x != null) (builtins.map filterNullsRecursive value)
-    else
-      # Return non-collection values as-is
-      value;
+    then builtins.filter (elem: !isUnset elem) (map filterUnset value)
+    else value;
+
+  mkUnsetOption = args:
+    mkOption args
+    // {
+      type = unsetOr args.type;
+      default = args.default or unset;
+      defaultText = literalExpression "unset";
+    };
 in {
   _file = ./module.nix;
   options = {
@@ -49,40 +60,43 @@ in {
     };
 
     # TODO: better typing
-    variable = mkOption {
+    variable = mkUnsetOption {
       type = types.attrs;
-      default = {};
+      description = '''';
     };
-    locals = mkOption {
+    locals = mkUnsetOption {
       type = types.attrs;
-      default = {};
+      description = '''';
     };
     output = mkOption {
       type = types.attrs;
       default = {};
+      description = '''';
     };
     data = mkOption {
       type = types.attrs;
       default = {};
+      description = '''';
     };
     resource = mkOption {
       type = types.attrs;
       default = {};
+      description = '''';
     };
-    terraform = mkOption {
-      default = {};
+    terraform = mkUnsetOption {
       type = types.submodule {
         options = {
-          required_providers = mkOption {
+          required_providers = mkUnsetOption {
             type = types.attrs;
-            default = {};
+            description = '''';
           };
-          backend = mkOption {
-            type = types.nullOr types.attrs;
-            default = null;
+          backend = mkUnsetOption {
+            type = types.attrs;
+            description = '''';
           };
         };
       };
+      description = '''';
     };
   };
 
@@ -129,7 +143,7 @@ in {
 
   config.final = let
     wrap = field: nest:
-      filterNullsRecursive (
+      filterUnset (
         mapAttrs (
           name: value: let
             values = builtins.attrValues value;
@@ -141,8 +155,8 @@ in {
               (options.${field}.${name}.type.getSubOptions [])
             );
           in
-            if value == null || values == []
-            then null
+            if isUnset value || values == []
+            then unset
             else
               (
                 map (val: let
@@ -157,9 +171,8 @@ in {
         config.${field} or {}
       );
   in
-    filterNonEmptyAttrsets {
-      inherit (config) output variable locals;
-      terraform = filterNullsRecursive config.terraform;
+    filterUnset {
+      inherit (config) output variable locals terraform;
       provider = wrap "provider" false;
       resource = wrap "resource" true;
       data = wrap "data" true;
