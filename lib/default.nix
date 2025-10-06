@@ -55,11 +55,10 @@
       nixpkgs-fmt $out/default.nix
     '';
 
-  module = import ./module.nix;
+  module = ./module.nix;
   mkModule = {
     sources ? [],
     moduleConfig,
-    ...
   }: let
     imports =
       if (builtins.length sources) != 0
