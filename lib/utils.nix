@@ -30,6 +30,7 @@
 in {
   ab = wrapInBraces;
   rb = removeBraces;
+  quot = input: "\"${input}\"";
   inherit toHCL;
 
   # numeric
