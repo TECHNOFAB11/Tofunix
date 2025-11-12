@@ -72,7 +72,9 @@
           moduleConfig
           module
           {
-            _module.args.pkgs = pkgs;
+            _module.args = {
+              inherit pkgs utils;
+            };
           }
         ];
     };
