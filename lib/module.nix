@@ -159,15 +159,21 @@ in {
   #    __toString = self: "\${var.${concatStringSep "." self.attrs}}"
   #  }
   #  or maybe add an attr "get" which then does that
-  config._module.args.ref =
+  config._module.args.ref = let
+    wrap = value: {
+      __chain = value;
+      __functor = self: arg: self // {__chain = self.__chain + arg;};
+      __toString = self: "\${${self.__chain}}";
+    };
+  in
     {
       var = builtins.listToAttrs (builtins.map (name: {
         inherit name;
-        value = "\${var.${name}}";
+        value = wrap "var.${name}";
       }) (builtins.attrNames config.variable));
       local = builtins.listToAttrs (builtins.map (name: {
         inherit name;
-        value = "\${local.${name}}";
+        value = wrap "local.${name}";
       }) (builtins.attrNames config.locals));
       data = builtins.listToAttrs (builtins.map (data: {
         name = data;
@@ -175,7 +181,7 @@ in {
           inherit name;
           value = builtins.listToAttrs (builtins.map (attr: {
             name = attr;
-            value = "\${data.${data}.${name}.${attr}}";
+            value = wrap "data.${data}.${name}.${attr}";
           }) (builtins.attrNames (config.data.${data}.${name})));
         }) (builtins.attrNames config.data.${data}));
       }) (builtins.attrNames config.data));
@@ -186,7 +192,7 @@ in {
         inherit name;
         value = builtins.listToAttrs (builtins.map (attr: {
           name = attr;
-          value = "\${${resource}.${name}.${attr}}";
+          value = wrap "${resource}.${name}.${attr}";
         }) (builtins.attrNames config.resource.${resource}.${name}));
       }) (builtins.attrNames config.resource.${resource}));
     }) (builtins.attrNames config.resource)));

@@ -76,6 +76,7 @@
         ${name} = ${mkOptName} {
           type = ${convertType value.type};
           description = '''${cleanDescription value} ''';
+          apply = val: if val ? __toString then builtins.toString val else val;
         };
       '')
     block.attributes or {});
@@ -134,8 +135,11 @@
             default = args.default or unset;
             defaultText = literalExpression "unset";
           };
-        referenceType = types.addCheck types.str (s: hasPrefix "\''${" s && hasSuffix "}" s) // {
+        referenceType = mkOptionType {
+          name = "reference";
           description = "reference";
+          descriptionClass = "noun";
+          check = val: (builtins.isString val || val ? __toString) && hasPrefix "\''${" (builtins.toString val) && hasSuffix "}" (builtins.toString val);
         };
       in rec {
         _file = "generated ${provider} provider";
