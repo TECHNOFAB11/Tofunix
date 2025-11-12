@@ -92,6 +92,7 @@
               {"GitLab Integration" = "gitlab_integration.md";}
               {"Reference" = "reference.md";}
               {"Options" = "options.md";}
+              {"Example Provider Options" = "example_provider_options.md";}
             ];
             markdown_extensions = [
               {
@@ -151,18 +152,18 @@
           tflib = import ./lib {inherit lib pkgs;};
           ntlib = inputs.nixtest.lib {inherit lib pkgs;};
           doclib = inputs.nix-mkdocs.lib {inherit lib pkgs;};
+
+          nullPlugin = tflib.mkOpentofuProvider {
+            owner = "hashicorp";
+            repo = "null";
+            version = "3.2.4";
+            hash = "sha256-kR+oynTYqzEAgXr0Hc9uL7ihQUuNQz6nT4kUoKYVtc0=";
+          };
         in rec {
           tests = ntlib.mkNixtest {
             modules = ntlib.autodiscover {dir = ./tests;};
             args = {
               inherit pkgs tflib ntlib;
-            };
-          };
-          tofunix = tflib.mkCliAio {
-            plugins = [pkgs.terraform-providers.vault];
-            moduleConfig = {ref, ...}: {
-              variable."test".default = "meow";
-              provider.vault."default".address = ref.var."test";
             };
           };
           optionsDoc = doclib.mkOptionDocs {
@@ -181,9 +182,15 @@
               }
             ];
           };
+          exampleProviderDoc = doclib.mkOptionDocs {
+            module.imports = [
+              "${tflib.generateOptions [nullPlugin]}/default.nix"
+            ];
+          };
           optionsDocs = pkgs.runCommand "options-docs" {} ''
             mkdir -p $out
             ln -s ${optionsDoc} $out/options.md
+            ln -s ${exampleProviderDoc} $out/provider_options.md
           '';
         };
       };
