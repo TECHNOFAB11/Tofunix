@@ -5,13 +5,23 @@
   lib,
   ...
 }: let
-  inherit (lib) mkOptionType isType literalExpression mkOption types filterAttrs mapAttrs mapAttrsToList;
+  inherit
+    (lib)
+    mkOptionType
+    isType
+    literalExpression
+    mkOption
+    types
+    filterAttrs
+    mapAttrs
+    mapAttrsToList
+    ;
 
   unsetType = mkOptionType {
     name = "unset";
     description = "unset";
     descriptionClass = "noun";
-    check = value: true;
+    check = isType "unset";
   };
   unset = {
     _type = "unset";
@@ -59,44 +69,84 @@ in {
       internal = true;
     };
 
+    generated = {
+      provider = mkOption {
+        type = types.attrsOf types.unspecified;
+        internal = true;
+        default = {};
+      };
+      resource = mkOption {
+        type = types.attrsOf types.unspecified;
+        internal = true;
+        default = {};
+      };
+      data = mkOption {
+        type = types.attrsOf types.unspecified;
+        internal = true;
+        default = {};
+      };
+    };
+
     # TODO: better typing
     variable = mkUnsetOption {
       type = types.attrs;
-      description = '''';
+      description = ''
+        Terraform variables.
+      '';
     };
     locals = mkUnsetOption {
       type = types.attrs;
-      description = '''';
+      description = ''
+        Terraform locals.
+      '';
     };
-    output = mkOption {
+    output = mkUnsetOption {
       type = types.attrs;
+      description = ''
+        Terraform outputs.
+      '';
+    };
+    provider = mkOption {
+      type = types.submodule {};
       default = {};
-      description = '''';
+      description = ''
+        Terraform providers. Sub-Options are automatically defined by generated providers.
+      '';
     };
     data = mkOption {
-      type = types.attrs;
+      type = types.submodule {};
       default = {};
-      description = '''';
+      description = ''
+        Terraform data. Sub-Options are automatically defined by generated providers.
+      '';
     };
     resource = mkOption {
-      type = types.attrs;
+      type = types.submodule {};
       default = {};
-      description = '''';
+      description = ''
+        Terraform resources. Sub-Options are automatically defined by generated providers.
+      '';
     };
     terraform = mkUnsetOption {
       type = types.submodule {
         options = {
           required_providers = mkUnsetOption {
             type = types.attrs;
-            description = '''';
+            description = ''
+              Required providers. Automatically contains imported generated providers.
+            '';
           };
           backend = mkUnsetOption {
             type = types.attrs;
-            description = '''';
+            description = ''
+              Terraform backend settings.
+            '';
           };
         };
       };
-      description = '''';
+      description = ''
+        Terraform settings.
+      '';
     };
   };
 
@@ -144,37 +194,41 @@ in {
   config.final = let
     wrap = field: nest:
       filterUnset (
-        mapAttrs (
-          name: value: let
-            values = builtins.attrValues value;
-            computedAttrs = builtins.filter (attr: attr != null) (
-              mapAttrsToList (attr: value:
-                if value.readOnly or value.internal or false
-                then attr
-                else null)
-              (options.${field}.${name}.type.getSubOptions [])
-            );
-          in
-            if isUnset value || values == []
-            then unset
-            else
-              (
-                map (val: let
-                  res = builtins.removeAttrs val computedAttrs;
-                in
-                  if nest && val ? _name
-                  then {${val._name} = res;}
-                  else res)
-                values
-              )
-        )
-        config.${field} or {}
+        if config ? ${field}
+        then
+          mapAttrs (
+            name: value: let
+              values = builtins.attrValues value;
+              computedAttrs = builtins.filter (attr: attr != null) (
+                mapAttrsToList (attr: value:
+                  if value.readOnly or value.internal or false
+                  then attr
+                  else null)
+                (config.generated.${field}.${name}.type.getSubOptions [])
+              );
+            in
+              if isUnset value || values == []
+              then unset
+              else
+                (
+                  map (val: let
+                    res = builtins.removeAttrs val computedAttrs;
+                  in
+                    if nest && val ? _name
+                    then {${val._name} = res;}
+                    else res)
+                  values
+                )
+          )
+          config.${field}
+        else unset
       );
   in
-    filterUnset {
+    # need to filter out {} separately oof
+    filterAttrs (name: value: value != {}) (filterUnset {
       inherit (config) output variable locals terraform;
       provider = wrap "provider" false;
       resource = wrap "resource" true;
       data = wrap "data" true;
-    };
+    });
 }

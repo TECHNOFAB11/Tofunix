@@ -3,7 +3,20 @@
   tflib,
   ntlib,
   ...
-}: {
+}: let
+  nullPlugin = tflib.mkOpentofuProvider {
+    owner = "hashicorp";
+    repo = "null";
+    version = "3.2.4";
+    hash = "sha256-kR+oynTYqzEAgXr0Hc9uL7ihQUuNQz6nT4kUoKYVtc0=";
+  };
+  kubernetesPlugin = tflib.mkOpentofuProvider {
+    owner = "hashicorp";
+    repo = "kubernetes";
+    version = "2.38.0";
+    hash = "sha256-n8dCz7DN6B4TOjmCNcl9nARjZ8B6KedRPL/8AwMQslE=";
+  };
+in {
   suites."CLI" = {
     pos = __curPos;
     tests = [
@@ -67,6 +80,26 @@
             assert_file_contains "${cliScript}" "ln -s .* main.tf.json" "should symlink config to main.tf.json"
             assert_file_contains "${cliScript}" "trap 'rm -f main.tf.json' EXIT" "should clean up the symlink"
             assert_file_contains "${cliScript}" "/bin/gitlab-tofu" "should call the gitlab-tofu helper"
+          '';
+      }
+      {
+        name = "Tofu validate";
+        type = "script";
+        script = let
+          tofunix = tflib.mkCliAio {
+            plugins = [nullPlugin kubernetesPlugin];
+            moduleConfig = {ref, ...}: {
+              variable."test".default = "meow";
+              provider.null."default".alias = "meow";
+              resource.null_resource."example".triggers.value = ref.var."test";
+            };
+          };
+        in
+          # sh
+          ''
+            ${ntlib.helpers.path [pkgs.coreutils]}
+            ${tofunix}/bin/tofunix init
+            ${tofunix}/bin/tofunix validate
           '';
       }
     ];

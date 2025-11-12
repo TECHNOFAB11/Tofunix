@@ -4,86 +4,106 @@
   fullSpec,
   ...
 }: let
-  provider = fullSpec.provider;
-  version = fullSpec.version;
-  source = fullSpec.source;
-  spec = fullSpec.spec;
+  inherit (lib) concatStrings concatMapStringsSep mapAttrsToList;
+  inherit (fullSpec) provider version source spec;
 
-  convertType = typ:
-    "(types.either referenceType "
-    + (
-      if typ == "string"
-      then "types.str"
-      else if typ == "number"
-      then "types.number"
-      else if typ == "bool"
-      then "types.bool"
-      else "types.unspecified"
-    )
-    + ")";
-  # TODO: list and object support
+  cleanDescription = val:
+    builtins.replaceStrings ["\${"] ["''\${"] (val.description or "");
 
-  providerAttributes = lib.concatStrings (lib.mapAttrsToList (name: value: let
-    type =
-      if value.optional or false
-      then "types.nullOr"
-      else "";
-    default =
-      if value.optional or false
-      then "default = null;"
-      else "";
+  genObjectOptions = typ:
+    concatStrings (mapAttrsToList (name: value: ''
+        ${name} = mkUnsetOption {type = ${convertType value};};
+      '')
+      typ);
+  typeMap = {
+    "string" = "types.str";
+    "number" = "types.number";
+    "bool" = "types.bool";
+    "object" = "types.submodule";
+    "map" = "types.attrsOf";
+    "list" = "types.listOf";
+    "set" = "types.listOf";
+    "dynamic" = "types.unspecified";
+  };
+  convertTypeInner = typ:
+    if (builtins.isList typ)
+    then concatMapStringsSep " " convertTypeInner typ
+    else if (builtins.isAttrs typ)
+    then "{options = {${genObjectOptions typ}};}"
+    else typeMap.${typ} 
+      or (builtins.trace "[tofunix] warning, found unknown type: ${typ}" "types.unspecified");
+  convertType = typ: "(types.either referenceType (${convertTypeInner typ}))";
+
+  providerAttributes = concatStrings (mapAttrsToList (name: value: let
+    mkOptName =
+      if value.optional or value.computed or false
+      then "mkUnsetOption"
+      else "mkOption";
   in
     # nix
     ''
-      ${name} = mkOption {
-        type = ${type} ${convertType value.type};
-        description = '''${value.description or ""}''';
-        ${default}
+      ${name} = ${mkOptName} {
+        type = ${convertType value.type};
+        description = '''${cleanDescription value} ''';
       };
     '')
-  spec.provider.block.attributes);
+  spec.provider.block.attributes or {});
+
+  getBlocks = resourceType: resourceName: block: isData:
+    concatStrings (mapAttrsToList (name: value:
+      # nix
+      ''
+        ${name} = mkUnsetOption {
+          type = let mod = (types.submodule {
+            options = {
+              ${getAttributes resourceType resourceName value.block isData}
+              ${getBlocks resourceType resourceName value.block isData}
+            };
+          }); in types.either mod (types.listOf mod);
+          description = '''${cleanDescription value} ''';
+        };
+      '') (block.block_types or {}));
 
   getAttributes = resourceType: resourceName: block: isData:
-    lib.concatStrings (lib.mapAttrsToList (name: value:
+    concatStrings (mapAttrsToList (name: value: let
+      mkOptName =
+        if value.optional or value.computed or false
+        then "mkUnsetOption"
+        else "mkOption";
+    in
       # nix
       ''
-        ${name} = mkOption {
-          description = '''
-            ${value.description or ""}
-          ''';
-          ${
-          if value.optional or value.computed or false
-          then ''
-            type = types.nullOr ${convertType value.type};
-            default = null;
-          ''
-          else ''
-            type = ${convertType value.type};
-          ''
-        }
+        ${name} = ${mkOptName} {
+          type = ${convertType value.type};
+          description = '''${cleanDescription value} ''';
         };
       '')
-    block.attributes);
+    block.attributes or {});
 
   genOptions = schema: isData:
-    lib.concatStrings (lib.mapAttrsToList (resourceType: value:
+    concatStrings (mapAttrsToList (resourceType: value:
       # nix
       ''
-        ${resourceType} = mkOption {
+        ${resourceType} = mkUnsetOption {
           type = types.attrsOf (types.submodule ({name, ...}: {
+            _file = "generated ${provider} provider";
             options = {
               _name = mkOption {
                 internal = true;
                 type = types.str;
                 default = name;
               };
+              count = mkUnsetOption {
+                type = types.either referenceType types.int;
+                description = '''
+                  Terraform count, used to create multiple instances of this resource/data.
+                ''';
+              };
               ${getAttributes resourceType "\${name}" value.block isData}
+              ${getBlocks resourceType "\${name}" value.block isData}
             };
           }));
-          description = '''
-            ${value.block.description or ""}
-          ''';
-          default = {};
+          description = '''${cleanDescription value.block} ''';
         };
       '')
     schema);
@@ -92,15 +112,40 @@
     # nix
     ''
       {lib, options, config, ...}: let
-        inherit (lib) mkOption types;
-        referenceType = types.addCheck types.str (s: lib.hasPrefix "\''${" s && lib.hasSuffix "}" s);
-      in {
+        inherit (lib) mkOption mkOptionType types isType literalExpression hasPrefix hasSuffix;
+        unsetType = mkOptionType {
+          name = "unset";
+          description = "unset";
+          descriptionClass = "noun";
+          check = isType "unset";
+        };
+        unset = {
+          _type = "unset";
+        };
+        unsetOr = typ:
+          (types.either unsetType typ)
+          // {
+            inherit (typ) description getSubOptions;
+          };
+        mkUnsetOption = args:
+          mkOption args
+          // {
+            type = unsetOr args.type;
+            default = args.default or unset;
+            defaultText = literalExpression "unset";
+          };
+        referenceType = types.addCheck types.str (s: hasPrefix "\''${" s && hasSuffix "}" s) // {
+          description = "reference";
+        };
+      in rec {
+        _file = "generated ${provider} provider";
         config.terraform.required_providers.${provider} = {
           source = "${source}";
           version = "${version}";
         };
-        options.provider.${provider} = mkOption {
-          type = types.nullOr (types.attrsOf (types.submodule ({name, ...}: {
+        config.generated.provider."${provider}" = mkUnsetOption {
+          type = types.attrsOf (types.submodule ({name, ...}: {
+            _file = "generated ${provider} provider";
             options = {
               _name = mkOption {
                 internal = true;
@@ -112,30 +157,34 @@
                 type = types.str;
                 default = "${version}";
               };
-              alias = mkOption {
-                type = types.nullOr types.str;
-                default = if name != "default" then name else null;
+              alias = mkUnsetOption {
+                type = types.str;
+                default = if name != "default" then name else unset;
               };
               id = mkOption {
                 readOnly = true;
                 type = types.str;
                 default = "\''${${provider}.''${name}}";
+                defaultText = literalExpression "\"\''${${provider}.''${name}}\"";
               };
               ${providerAttributes}
             };
-          })));
-          default = null;
-          description = '''
-            ${spec.provider.block.description or ""}
-          ''';
+          }));
+          description = '''${cleanDescription spec.provider.block}''';
         };
 
-        options.resource = {
-          ${genOptions spec.resource_schemas false}
+        # required for looking up the suboptions
+        config.generated = {
+          resource = {
+            ${genOptions spec.resource_schemas false}
+          };
+          data = {
+            ${genOptions spec.data_source_schemas true}
+          };
         };
-
-        options.data = {
-          ${genOptions spec.data_source_schemas true}
+        # hacky unfortunately
+        options = {
+          inherit (config.generated) resource data provider;
         };
       }
     '';
