@@ -4,7 +4,7 @@
   fullSpec,
   ...
 }: let
-  inherit (lib) concatStrings concatMapStringsSep mapAttrsToList;
+  inherit (lib) concatStrings mapAttrsToList;
   inherit (fullSpec) provider version source spec;
 
   cleanDescription = val:

@@ -4,10 +4,20 @@
     repo,
     version,
     src,
-    registry ? "registry.opentofu.org",
+    registry ? null,
   }: let
     inherit (pkgs.go) GOARCH GOOS;
-    provider-source-address = "${registry}/${owner}/${repo}";
+    # if the user doesnt specify a registry, we shouldn't add one in required_providers
+    provider-orig-source-address = "${
+      if registry != null
+      then "${registry}/"
+      else ""
+    }${owner}/${repo}";
+    registry_default =
+      if registry == null
+      then "registry.opentofu.org"
+      else registry;
+    provider-source-address = "${registry_default}/${owner}/${repo}";
   in
     pkgs.stdenv.mkDerivation {
       pname = "terraform-provider-${repo}";
@@ -27,7 +37,7 @@
       '';
 
       passthru = {
-        inherit provider-source-address;
+        inherit provider-source-address provider-orig-source-address;
       };
     };
 
@@ -62,13 +72,14 @@
     version,
     os ? pkgs.go.GOOS,
     arch ? pkgs.go.GOARCH,
+    registry ? null,
     hash,
   }: let
     specs = fetchProviderSpec {inherit owner repo version hash;};
     spec = builtins.fromJSON (builtins.readFile "${specs}/${os}_${arch}.json");
   in
     mkTerraformProvider {
-      inherit version owner repo;
+      inherit version owner repo registry;
       src = pkgs.fetchurl {
         url = spec.download_url;
         sha256 = spec.shasum;

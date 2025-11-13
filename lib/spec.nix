@@ -11,7 +11,7 @@
   origSources = sources;
   _sources =
     if sourcesArePackages
-    then (map (s: "${s.provider-source-address}@${s.version}") sources)
+    then (map (s: "${s.provider-orig-source-address or s.provider-source-address}@${s.version}") sources)
     else sources;
 
   hasRegistry = source: builtins.length (splitString "/" source) == 3;
@@ -55,9 +55,15 @@
 
   spec = builtins.fromJSON (builtins.readFile specJson);
   transformedSpec = builtins.listToAttrs (map (key: let
-    # source = removeRegistry key;
-    source = key;
-    name = cleanName (removeRegistry source);
+    name = cleanName (removeRegistry key);
+    # this tries to keep the registry if the user specified one originally, but
+    # strips it away if not. Since commonly we have "registry.opentofu.org" here,
+    # but terraform for example doesn't seem to like some of the providers there
+    hadRegistry = hasRegistry (sourcesObj.${name}.source);
+    source =
+      if hadRegistry
+      then key
+      else removeRegistry key;
     provider = getProvider key;
   in {
     inherit name;
