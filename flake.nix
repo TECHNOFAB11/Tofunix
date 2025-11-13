@@ -166,6 +166,7 @@
               inherit pkgs tflib ntlib;
             };
           };
+          nullOptions = tflib.generateOptions [nullPlugin];
           optionsDoc = doclib.mkOptionDocs {
             module = {
               imports = [

@@ -27,7 +27,12 @@
   };
   convertTypeInner = typ:
     if (builtins.isList typ)
-    then concatMapStringsSep " " convertTypeInner typ
+    then
+      # for nested stuff like attrsOf we need to repeat the "either referenceType" stuff
+      # so references work in maps aswell for example
+      if builtins.length typ > 1
+      then "${convertTypeInner (builtins.head typ)} ${convertType (builtins.tail typ)}"
+      else convertTypeInner (builtins.head typ)
     else if (builtins.isAttrs typ)
     then "{options = {${genObjectOptions typ}};}"
     else typeMap.${typ} 
@@ -164,12 +169,18 @@
               alias = mkUnsetOption {
                 type = types.str;
                 default = if name != "default" then name else unset;
+                description = '''
+                  Alias for this terraform provider. Automatically set to "''${name}".
+                ''';
               };
               id = mkOption {
                 readOnly = true;
                 type = types.str;
                 default = "\''${${provider}.''${name}}";
                 defaultText = literalExpression "\"\''${${provider}.''${name}}\"";
+                description = '''
+                  ID of provider, read only. Only returns a terraform reference string.
+                ''';
               };
               ${providerAttributes}
             };
