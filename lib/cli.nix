@@ -47,6 +47,7 @@ in
     ${getExe wrapped} -chdir="$TF_TMP_DIR" "$@"
   '')
   // {
+    inherit module;
     tfjson = source;
     gitlab = import ./gitlab.nix {inherit lib pkgs source wrapped;};
   }
