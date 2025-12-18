@@ -75,3 +75,17 @@ This provider can be used with the above functions to generate it's options.
 Contains all of terraforms functions, like `abs`.
 These wrappers automatically handle `${` and `}`, so they can be chained
 and the final string will just contain one `${` and `}` around it.
+
+A complex example from [coder-templates](https://coder-templates.projects.tf):
+
+```nix
+{
+  locals."git_repo_folder" = with utils; let
+    split_repo = split (quot "") ref.data.coder_parameter.git_repo.value;
+  in
+    try [
+      (element split_repo "${rb (length split_repo)} - 1")
+      (quot "")
+    ];
+}
+```

@@ -92,6 +92,7 @@
               {"GitLab Integration" = "gitlab_integration.md";}
               {"Reference" = "reference.md";}
               {"Options" = "options.md";}
+              {"Examples" = "examples.md";}
               {"Example Provider Options" = "example_provider_options.md";}
             ];
             markdown_extensions = [
