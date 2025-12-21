@@ -94,6 +94,7 @@
               {"Options" = "options.md";}
               {"Examples" = "examples.md";}
               {"Example Provider Options" = "example_provider_options.md";}
+              {"Debugging" = "debugging.md";}
             ];
             markdown_extensions = [
               {

@@ -37,7 +37,9 @@
     then "{options = {${genObjectOptions typ}};}"
     else typeMap.${typ} 
       or (builtins.trace "[tofunix] warning, found unknown type: ${typ}" "types.unspecified");
-  convertType = typ: "(types.either referenceType (${convertTypeInner typ}))";
+  convertType = typ:
+    builtins.addErrorContext "[tofunix] while converting type ${builtins.toJSON typ}"
+    "(types.either referenceType (${convertTypeInner typ}))";
 
   providerAttributes = concatStrings (mapAttrsToList (name: value: let
     mkOptName =
@@ -45,6 +47,7 @@
       then "mkUnsetOption"
       else "mkOption";
   in
+    builtins.addErrorContext "[tofunix] while making attributes for ${name} (value: ${builtins.toJSON value})"
     # nix
     ''
       ${name} = ${mkOptName} {
@@ -55,39 +58,46 @@
   spec.provider.block.attributes or {});
 
   getBlocks = resourceType: resourceName: block: isData:
-    concatStrings (mapAttrsToList (name: value:
-      # nix
-      ''
-        ${name} = mkUnsetOption {
-          type = let mod = (types.submodule {
-            options = {
-              ${getAttributes resourceType resourceName value.block isData}
-              ${getBlocks resourceType resourceName value.block isData}
-            };
-          }); in types.either mod (types.listOf mod);
-          description = '''${cleanDescription value} ''';
-        };
-      '') (block.block_types or {}));
+    builtins.addErrorContext "[tofunix] while getting blocks of resource type '${resourceType}'" (
+      concatStrings (mapAttrsToList (name: value:
+        builtins.addErrorContext "[tofunix] while generating option for '${name}' (value: ${builtins.toJSON value})"
+        # nix
+        ''
+          ${name} = mkUnsetOption {
+            type = let mod = (types.submodule {
+              options = {
+                ${getAttributes resourceType resourceName value.block isData}
+                ${getBlocks resourceType resourceName value.block isData}
+              };
+            }); in types.either mod (types.listOf mod);
+            description = '''${cleanDescription value} ''';
+          };
+        '') (block.block_types or {}))
+    );
 
   getAttributes = resourceType: resourceName: block: isData:
-    concatStrings (mapAttrsToList (name: value: let
-      mkOptName =
-        if value.optional or value.computed or false
-        then "mkUnsetOption"
-        else "mkOption";
-    in
-      # nix
-      ''
-        ${name} = ${mkOptName} {
-          type = ${convertType value.type};
-          description = '''${cleanDescription value} ''';
-          apply = val: if val ? __toString then builtins.toString val else val;
-        };
-      '')
-    block.attributes or {});
+    builtins.addErrorContext "[tofunix] while getting attributes of resource type '${resourceType}'" (
+      concatStrings (mapAttrsToList (name: value: let
+        mkOptName =
+          if value.optional or value.computed or false
+          then "mkUnsetOption"
+          else "mkOption";
+      in
+        builtins.addErrorContext "[tofunix] while generating option for '${name}' (value: ${builtins.toJSON value})"
+        # nix
+        ''
+          ${name} = ${mkOptName} {
+            type = ${convertType value.type};
+            description = '''${cleanDescription value} ''';
+            apply = val: if val ? __toString then builtins.toString val else val;
+          };
+        '')
+      block.attributes or {})
+    );
 
   genOptions = schema: isData:
     concatStrings (mapAttrsToList (resourceType: value:
+      builtins.addErrorContext "[tofunix] while generating options for '${resourceType}' (value: ${builtins.toJSON value})"
       # nix
       ''
         ${resourceType} = mkUnsetOption {
@@ -115,6 +125,7 @@
     schema);
 
   generated =
+    builtins.addErrorContext "[tofunix] while generating main nix file for provider ${provider}"
     # nix
     ''
       {lib, options, config, ...}: let

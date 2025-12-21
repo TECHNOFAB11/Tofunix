@@ -1,3 +1,3 @@
 # Example of provider options docs
 
-{% include 'provider_options.md' %}
+{{ include_raw('provider_options.md') }}
