@@ -52,6 +52,7 @@ Use `mkCliAio` for this.
 ```
 
 !!! note
+
     You can use `ref` to reference other resources. This basically just returns
     a string like this: `${var.bunny_api_key}`
 
@@ -69,6 +70,7 @@ tofunix-lib.generateOptions [<sources here>];
 ```
 
 !!! note
+
     You can also generate the provider options without packaging them first.
     `generateSpec` and thus also `generateOptions` supports passing strings in
     sources. See [Reference](./reference.md).

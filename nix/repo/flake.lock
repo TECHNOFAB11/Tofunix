@@ -1,0 +1,136 @@
+{
+  "nodes": {
+    "devshell-lib": {
+      "locked": {
+        "dir": "lib",
+        "lastModified": 1758204313,
+        "narHash": "sha256-ainbY0Oajb1HMdvy+A8QxF/P5qwcbEzJGEY5pzKdDdc=",
+        "owner": "rensa-nix",
+        "repo": "devshell",
+        "rev": "7d0c4bc78d9f017a739b0c7eb2f4e563118353e6",
+        "type": "gitlab"
+      },
+      "original": {
+        "dir": "lib",
+        "owner": "rensa-nix",
+        "repo": "devshell",
+        "type": "gitlab"
+      }
+    },
+    "devtools-lib": {
+      "locked": {
+        "dir": "lib",
+        "lastModified": 1766237846,
+        "narHash": "sha256-7n3WFabnf49SFHXD/e4zfLit3BniZZOecUXfBm3d1d0=",
+        "owner": "rensa-nix",
+        "repo": "devtools",
+        "rev": "5c8712f48c5bcb6b79d3da1afd1268f84f5e35e3",
+        "type": "gitlab"
+      },
+      "original": {
+        "dir": "lib",
+        "owner": "rensa-nix",
+        "repo": "devtools",
+        "type": "gitlab"
+      }
+    },
+    "nix-gitlab-ci-lib": {
+      "locked": {
+        "dir": "lib",
+        "lastModified": 1765444672,
+        "narHash": "sha256-B0cMjRs9P50ym9Le0VUcRN69Yy6tbV13MXq81tTTEus=",
+        "owner": "TECHNOFAB",
+        "repo": "nix-gitlab-ci",
+        "rev": "8f88a53b5479773cd626420362631bc1da99e677",
+        "type": "gitlab"
+      },
+      "original": {
+        "dir": "lib",
+        "owner": "TECHNOFAB",
+        "ref": "3.1.2",
+        "repo": "nix-gitlab-ci",
+        "type": "gitlab"
+      }
+    },
+    "nixmkdocs-lib": {
+      "locked": {
+        "dir": "lib",
+        "lastModified": 1766404754,
+        "narHash": "sha256-EjBe6x6BT8ckPirMWhSf1GfaFxORYxR/Uu71FvSAm60=",
+        "owner": "TECHNOFAB",
+        "repo": "nixmkdocs",
+        "rev": "cfa9606eeeb9288e2799896d7d42b3d3860f9ccb",
+        "type": "gitlab"
+      },
+      "original": {
+        "dir": "lib",
+        "owner": "TECHNOFAB",
+        "repo": "nixmkdocs",
+        "type": "gitlab"
+      }
+    },
+    "nixtest-lib": {
+      "locked": {
+        "dir": "lib",
+        "lastModified": 1766514204,
+        "narHash": "sha256-jK6gHvJJjUpEWrPvraBgstsF7oifatuWsj9suy7GFus=",
+        "owner": "TECHNOFAB",
+        "repo": "nixtest",
+        "rev": "b87e38847d84973e84b6727b24fea48b7bc108c1",
+        "type": "gitlab"
+      },
+      "original": {
+        "dir": "lib",
+        "owner": "TECHNOFAB",
+        "repo": "nixtest",
+        "type": "gitlab"
+      }
+    },
+    "root": {
+      "inputs": {
+        "devshell-lib": "devshell-lib",
+        "devtools-lib": "devtools-lib",
+        "nix-gitlab-ci-lib": "nix-gitlab-ci-lib",
+        "nixmkdocs-lib": "nixmkdocs-lib",
+        "nixtest-lib": "nixtest-lib",
+        "soonix-lib": "soonix-lib",
+        "treefmt-nix": "treefmt-nix"
+      }
+    },
+    "soonix-lib": {
+      "locked": {
+        "dir": "lib",
+        "lastModified": 1766044966,
+        "narHash": "sha256-VB8PgA5QYmehFCGGz8YmlmuhCG43ab9rK9ufdKmfjao=",
+        "owner": "TECHNOFAB",
+        "repo": "soonix",
+        "rev": "e9860d65a0123af948c1a2da65664a6d481efe05",
+        "type": "gitlab"
+      },
+      "original": {
+        "dir": "lib",
+        "owner": "TECHNOFAB",
+        "repo": "soonix",
+        "type": "gitlab"
+      }
+    },
+    "treefmt-nix": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1767122417,
+        "narHash": "sha256-yOt/FTB7oSEKQH9EZMFMeuldK1HGpQs2eAzdS9hNS/o=",
+        "owner": "numtide",
+        "repo": "treefmt-nix",
+        "rev": "dec15f37015ac2e774c84d0952d57fcdf169b54d",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "treefmt-nix",
+        "type": "github"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}

@@ -1,0 +1,25 @@
+{
+  "extends": [
+    "config:recommended"
+  ],
+  "gitlabci": {
+    "enabled": false
+  },
+  "lockFileMaintenance": {
+    "branchTopic": "lock-file-maintenance-{{packageFile}}",
+    "commitMessageExtra": "({{packageFile}})",
+    "enabled": true,
+    "extends": [
+      "schedule:monthly"
+    ]
+  },
+  "nix": {
+    "enabled": true
+  },
+  "postUpgradeTasks": {
+    "commands": [
+      "nix-portable nix run .#soonix:update"
+    ],
+    "executionMode": "branch"
+  }
+}
