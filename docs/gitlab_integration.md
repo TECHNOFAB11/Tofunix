@@ -27,6 +27,7 @@ nix run .#tofunix.gitlab -- init
 ```
 
 !!! note
+
     Do note that the Gitlab script just symlinks the .tf.json to your CWD and deletes it on exit.
     The main Tofunix script is a bit more involved to prevent other local files from influencing
     the output.
