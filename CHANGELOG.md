@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
-## [v2.1.0](https://gitlab.com/TECHNOFAB/tofunix/compare/cb0605cf53f61286407345d1ee32395e54ba42d1..v2.1.0) - 2025-12-31
+## [v2.1.0](https://gitlab.com/TECHNOFAB/tofunix/compare/v2.0.0..v2.1.0) - 2025-12-31
 #### Features
 - switch from flake-parts and devenv to rensa ecosystem - ([e322713](https://gitlab.com/TECHNOFAB/tofunix/commit/e3227131c2013389a4e862130ea71a74097444f7)) - [@TECHNOFAB](https://gitlab.com/TECHNOFAB)
 #### Bug Fixes
@@ -15,7 +15,7 @@ All notable changes to this project will be documented in this file. See [conven
 
 - - -
 
-## [v2.0.0](https://gitlab.com/TECHNOFAB/tofunix/compare/v1.0.0..v2.0.0) - 2025-12-31
+## [v2.0.0](https://gitlab.com/TECHNOFAB/tofunix/compare/v1.0.0..v2.0.0) - 2025-11-13
 #### Features
 - (**module**) improve references to allow for arbitrary accessors - ([4091db6](https://gitlab.com/TECHNOFAB/tofunix/commit/4091db62baacb1a6ecb874ea1df104aed1740aeb)) - [@TECHNOFAB](https://gitlab.com/TECHNOFAB)
 - improve generator and module a lot, handle edge cases etc. - ([c194703](https://gitlab.com/TECHNOFAB/tofunix/commit/c194703c886b4515662871612905deccf0c1065a)) - [@TECHNOFAB](https://gitlab.com/TECHNOFAB)
@@ -38,7 +38,7 @@ All notable changes to this project will be documented in this file. See [conven
 
 - - -
 
-## [v1.0.0](https://gitlab.com/TECHNOFAB/tofunix/compare/7a355b7cf4001515249157548dd4f608d44a9252..v1.0.0) - 2025-12-31
+## [v1.0.0](https://gitlab.com/TECHNOFAB/tofunix/compare/7a355b7cf4001515249157548dd4f608d44a9252..v1.0.0) - 2025-08-09
 #### Features
 - add gitlab tofu support - ([a3c5142](https://gitlab.com/TECHNOFAB/tofunix/commit/a3c5142d7edf8aa03a912252fe27ea0b242b0f8a)) - [@TECHNOFAB](https://gitlab.com/TECHNOFAB)
 #### Bug Fixes
