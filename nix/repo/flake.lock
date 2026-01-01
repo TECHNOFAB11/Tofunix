@@ -3,11 +3,11 @@
     "devshell-lib": {
       "locked": {
         "dir": "lib",
-        "lastModified": 1758204313,
-        "narHash": "sha256-ainbY0Oajb1HMdvy+A8QxF/P5qwcbEzJGEY5pzKdDdc=",
+        "lastModified": 1767218348,
+        "narHash": "sha256-8MJqwH9sRMuHH+RsB7iqWyWD30TgmpiYKEvegAULggs=",
         "owner": "rensa-nix",
         "repo": "devshell",
-        "rev": "7d0c4bc78d9f017a739b0c7eb2f4e563118353e6",
+        "rev": "7a9b7e5d9f162a1fa3edfdc0169cdc29d3a67f8e",
         "type": "gitlab"
       },
       "original": {
@@ -20,11 +20,11 @@
     "devtools-lib": {
       "locked": {
         "dir": "lib",
-        "lastModified": 1766237846,
-        "narHash": "sha256-7n3WFabnf49SFHXD/e4zfLit3BniZZOecUXfBm3d1d0=",
+        "lastModified": 1767214272,
+        "narHash": "sha256-gvW7flZ60xdv3Z3Ksec5jcRjW2sqRHsGoJdwsNWQVPk=",
         "owner": "rensa-nix",
         "repo": "devtools",
-        "rev": "5c8712f48c5bcb6b79d3da1afd1268f84f5e35e3",
+        "rev": "f40e59c32c48cdbf4cbc621c2f0f11e7bb80dbd3",
         "type": "gitlab"
       },
       "original": {
