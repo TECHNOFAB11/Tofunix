@@ -230,10 +230,10 @@
         # required for looking up the suboptions
         config.generated = {
           resource = {
-            ${genOptions spec.resource_schemas false}
+            ${genOptions (spec.resource_schemas or {}) false}
           };
           data = {
-            ${genOptions spec.data_source_schemas true}
+            ${genOptions (spec.data_source_schemas or {}) true}
           };
         };
         # hacky unfortunately
