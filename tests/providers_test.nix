@@ -8,13 +8,13 @@
     owner = "cloudflare";
     repo = "cloudflare";
     version = "5.15.0";
-    hash = "sha256-OVmE5zPRp+kEj7zGxxVu2bcNA2gDdj4m5DgAZckQW2k=";
+    hash = "sha256-Yvi7bgpdj9Fl48rtolxkGdW9VhiJjiG7DdZlCQJnm/w=";
   };
   sops = tflib.mkOpentofuProvider {
     owner = "carlpett";
     repo = "sops";
     version = "1.3.0";
-    hash = "sha256-fs+RFt8afdzv8wyMUl+zxgGSxKOdGEerL3k3TTjio/g=";
+    hash = "sha256-G60Y6hCPVI2NtE0A4wuoBVO4/Nnu882bnGhXcnPTPzU=";
   };
 in {
   suites."Providers" = {

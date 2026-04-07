@@ -8,13 +8,13 @@
     owner = "hashicorp";
     repo = "null";
     version = "3.2.4";
-    hash = "sha256-kR+oynTYqzEAgXr0Hc9uL7ihQUuNQz6nT4kUoKYVtc0=";
+    hash = "sha256-gl0PlvnyVXK9CtwLzNVqqtKMcRbNOK7nAugliCQmwe0=";
   };
   kubernetesPlugin = tflib.mkOpentofuProvider {
     owner = "hashicorp";
     repo = "kubernetes";
     version = "2.38.0";
-    hash = "sha256-n8dCz7DN6B4TOjmCNcl9nARjZ8B6KedRPL/8AwMQslE=";
+    hash = "sha256-Z0iAr1KEAyxBN7H5s7RT3gItQFskKZYStDhwtIMT244=";
   };
 in {
   suites."CLI" = {

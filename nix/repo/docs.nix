@@ -14,7 +14,7 @@
     owner = "hashicorp";
     repo = "null";
     version = "3.2.4";
-    hash = "sha256-kR+oynTYqzEAgXr0Hc9uL7ihQUuNQz6nT4kUoKYVtc0=";
+    hash = "sha256-gl0PlvnyVXK9CtwLzNVqqtKMcRbNOK7nAugliCQmwe0=";
   };
   exampleProviderDoc = doclib.mkOptionDocs {
     module.imports = [
