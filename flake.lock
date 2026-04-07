@@ -37,17 +37,17 @@
       },
       "locked": {
         "dir": "lib",
-        "lastModified": 1766497301,
-        "narHash": "sha256-W7WeOXMUZROMtbU1qQNWy/yai+k8gG09YACFQ7ImpsQ=",
+        "lastModified": 1775132170,
+        "narHash": "sha256-ZhXcliu8E1KXlaviFnMHQpb/VSIbsALSFZoeb9Z6bhc=",
         "owner": "rensa-nix",
         "repo": "core",
-        "rev": "e08c48b5db1052bfb8b8dad764e05decc1af893e",
+        "rev": "bfdb2c1aa85cd4af286b0833b046e13a96d64d6a",
         "type": "gitlab"
       },
       "original": {
         "dir": "lib",
         "owner": "rensa-nix",
-        "ref": "v0.1.1",
+        "ref": "v0.2.0",
         "repo": "core",
         "type": "gitlab"
       }
