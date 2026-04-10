@@ -46,8 +46,14 @@
     repo,
     version,
     hash,
+    registry,
   }:
-    pkgs.runCommand "opentofu-fetch-provider-spec-${owner}-${repo}" {
+    let 
+      registry_default = 
+        if registry == null 
+        then "registry.opentofu.org"
+        else registry;
+    in pkgs.runCommand "opentofu-fetch-provider-spec-${owner}-${repo}" {
       nativeBuildInputs = with pkgs; [jq curl cacert];
       outputHashMode = "recursive";
       outputHashAlgo = "sha256";
@@ -56,13 +62,13 @@
       set -e
       mkdir -p "$out"
 
-      url="https://registry.opentofu.org/v1/providers/${owner}/${repo}/versions"
+      url="https://${registry_default}/v1/providers/${owner}/${repo}/versions"
       platforms=$(curl -fsS "$url" | jq -c ".versions[] | select(.version == \"${version}\") | .platforms[]")
       echo "$platforms" | while read -r p; do
         os=$(echo "$p" | jq -r .os)
         arch=$(echo "$p" | jq -r .arch)
         echo "Downloading $os/$arch spec"
-        curl -fsS "https://registry.opentofu.org/v1/providers/${owner}/${repo}/${version}/download/$os/$arch" | jq -c "{download_url,shasum}" > "$out/''${os}_''${arch}.json"
+        curl -fsS "https://${registry_default}/v1/providers/${owner}/${repo}/${version}/download/$os/$arch" | jq -c "{download_url,shasum}" > "$out/''${os}_''${arch}.json"
       done
     '';
 
@@ -75,7 +81,7 @@
     registry ? null,
     hash,
   }: let
-    specs = fetchProviderSpec {inherit owner repo version hash;};
+    specs = fetchProviderSpec {inherit owner repo version hash registry;};
     spec = builtins.fromJSON (builtins.readFile "${specs}/${os}_${arch}.json");
   in
     mkTerraformProvider {
