@@ -47,7 +47,7 @@
     version,
     hash,
   }:
-    pkgs.runCommand "opentofu-fetch-provider-spec" {
+    pkgs.runCommand "opentofu-fetch-provider-spec-${owner}-${repo}" {
       nativeBuildInputs = with pkgs; [jq curl cacert];
       outputHashMode = "recursive";
       outputHashAlgo = "sha256";
@@ -62,7 +62,7 @@
         os=$(echo "$p" | jq -r .os)
         arch=$(echo "$p" | jq -r .arch)
         echo "Downloading $os/$arch spec"
-        curl -fsS "https://registry.opentofu.org/v1/providers/${owner}/${repo}/${version}/download/$os/$arch" -o "$out/''${os}_''${arch}.json"
+        curl -fsS "https://registry.opentofu.org/v1/providers/${owner}/${repo}/${version}/download/$os/$arch" | jq -c "{download_url,shasum}" > "$out/''${os}_''${arch}.json"
       done
     '';
 
