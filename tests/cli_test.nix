@@ -102,6 +102,33 @@ in {
             ${tofunix}/bin/tofunix validate
           '';
       }
+      {
+        name = "Tofu validate with meta-arguments";
+        type = "script";
+        script = let
+          tofunix = tflib.mkCliAio {
+            plugins = [nullPlugin];
+            moduleConfig = {ref, ...}: {
+              resource.null_resource."primary".triggers.value = "test";
+              resource.null_resource."with_lifecycle" = {
+                triggers.value = "test";
+                depends_on = [ref.null_resource."primary"];
+                lifecycle = {
+                  create_before_destroy = true;
+                  prevent_destroy = true;
+                  ignore_changes = ["triggers"];
+                };
+              };
+            };
+          };
+        in
+          # sh
+          ''
+            ${ntlib.helpers.path [pkgs.coreutils]}
+            ${tofunix}/bin/tofunix init
+            ${tofunix}/bin/tofunix validate
+          '';
+      }
     ];
   };
 }
