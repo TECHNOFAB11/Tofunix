@@ -1,5 +1,4 @@
 {
-  options,
   config,
   pkgs,
   lib,
@@ -179,10 +178,14 @@ in {
         name = data;
         value = builtins.listToAttrs (builtins.map (name: {
           inherit name;
-          value = builtins.listToAttrs (builtins.map (attr: {
-            name = attr;
-            value = wrap "data.${data}.${name}.${attr}";
-          }) (builtins.attrNames (config.data.${data}.${name})));
+          value =
+            {
+              __toString = _: "data.${data}.${name}";
+            }
+            // builtins.listToAttrs (builtins.map (attr: {
+              name = attr;
+              value = wrap "data.${data}.${name}.${attr}";
+            }) (builtins.attrNames (config.data.${data}.${name})));
         }) (builtins.attrNames config.data.${data}));
       }) (builtins.attrNames config.data));
     }
@@ -190,10 +193,14 @@ in {
       name = resource;
       value = builtins.listToAttrs (builtins.map (name: {
         inherit name;
-        value = builtins.listToAttrs (builtins.map (attr: {
-          name = attr;
-          value = wrap "${resource}.${name}.${attr}";
-        }) (builtins.attrNames config.resource.${resource}.${name}));
+        value =
+          {
+            __toString = _: "${resource}.${name}";
+          }
+          // builtins.listToAttrs (builtins.map (attr: {
+            name = attr;
+            value = wrap "${resource}.${name}.${attr}";
+          }) (builtins.attrNames config.resource.${resource}.${name}));
       }) (builtins.attrNames config.resource.${resource}));
     }) (builtins.attrNames config.resource)));
 
