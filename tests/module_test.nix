@@ -82,6 +82,48 @@ in {
           data = eval._module.args.ref.data.null_data_source.example.inputs;
         };
       }
+      {
+        name = "meta-arguments generate correctly";
+        type = "script";
+        script = let
+          eval = tflib.mkModule {
+            sources = [nullPlugin];
+            moduleConfig = {ref, ...}: {
+              resource.null_resource.primary = {};
+              resource.null_resource.example = {
+                depends_on = [ref.null_resource."primary"];
+                lifecycle = {
+                  prevent_destroy = true;
+                  create_before_destroy = true;
+                  ignore_changes = ["triggers"];
+                };
+              };
+            };
+          };
+          jsonFile = eval.config.finalPackage;
+        in
+          # sh
+          ''
+            ${ntlib.helpers.path [pkgs.jq]}
+            ${ntlib.helpers.scriptHelpers}
+
+            assert "-f ${jsonFile}" "JSON file should be created"
+
+            # Check lifecycle block exists
+            assert "$(jq '.resource.null_resource[] | select(.example != null) | .example | has("lifecycle")' ${jsonFile}) = true" "should have lifecycle block"
+
+            # Check lifecycle sub-fields
+            assert "$(jq '.resource.null_resource[] | select(.example != null) | .example.lifecycle.prevent_destroy' ${jsonFile}) = true" "prevent_destroy should be true"
+            assert "$(jq '.resource.null_resource[] | select(.example != null) | .example.lifecycle.create_before_destroy' ${jsonFile}) = true" "create_before_destroy should be true"
+            assert "$(jq -r '.resource.null_resource[] | select(.example != null) | .example.lifecycle.ignore_changes[0]' ${jsonFile}) = triggers" "ignore_changes should contain triggers"
+
+            # Check depends_on
+            assert "$(jq -r '.resource.null_resource[] | select(.example != null) | .example.depends_on[0]' ${jsonFile}) = null_resource.primary" "depends_on should reference primary"
+
+            # Check that lifecycle is not set on primary
+            assert "$(jq '.resource.null_resource[] | select(.primary != null) | .primary | has("lifecycle")' ${jsonFile}) = false" "primary should not have lifecycle block"
+          '';
+      }
     ];
   };
 }

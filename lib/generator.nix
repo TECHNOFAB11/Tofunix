@@ -123,6 +123,121 @@
       block.attributes or {})
     );
 
+  # meta-arguments shared by both resource and data blocks
+  sharedMetaArgs =
+    # nix
+    ''
+      count = mkUnsetOption {
+        type = types.either referenceType types.int;
+        description = '''
+          Used to create multiple instances of this resource/data.
+        ''';
+      };
+      for_each = mkUnsetOption {
+        type = types.oneOf [referenceType (types.attrsOf types.str) (types.listOf types.str)];
+        description = '''
+          Used to create multiple instances of this resource/data from a map or set.
+        ''';
+      };
+      depends_on = mkUnsetOption {
+        type = types.listOf (types.coercedTo types.attrs builtins.toString types.str);
+        description = '''
+          Explicit dependency references. Use this to declare hidden dependencies that OpenTofu cannot automatically infer.
+        ''';
+      };
+      provider = mkUnsetOption {
+        type = types.str;
+        example = "aws.west";
+        description = '''
+          Provider reference for selecting a non-default provider configuration.
+        ''';
+      };
+    '';
+
+  conditionBlockType =
+    # nix
+    ''
+      types.listOf (types.submodule {
+        options = {
+          condition = mkOption {
+            type = types.either referenceType types.str;
+            description = '''
+              A condition expression that must evaluate to true for the check to pass.
+            ''';
+          };
+          error_message = mkOption {
+            type = types.str;
+            description = '''
+              Error message displayed when the condition evaluates to false.
+            ''';
+          };
+        };
+      })
+    '';
+
+  resourceOnlyMetaArgs =
+    # nix
+    ''
+      lifecycle = mkUnsetOption {
+        type = types.submodule {
+          options = {
+            create_before_destroy = mkUnsetOption {
+              type = types.bool;
+              description = '''
+                When `true`, the new replacement object is created first before destroying the old one.
+              ''';
+            };
+            prevent_destroy = mkUnsetOption {
+              type = types.either referenceType types.bool;
+              description = '''
+                When `true`, OpenTofu will reject any plan that would destroy this resource.
+              ''';
+            };
+            ignore_changes = mkUnsetOption {
+              type = types.either (types.enum ["all"]) (types.listOf types.str);
+              description = '''
+                List of attribute names to ignore during updates, or "all" to ignore all attributes.
+              ''';
+            };
+            replace_triggered_by = mkUnsetOption {
+              type = types.listOf types.str;
+              description = '''
+                List of resource or attribute references that trigger replacement of this resource when changed.
+              ''';
+            };
+            preconditions = mkUnsetOption {
+              type = ${conditionBlockType};
+              description = '''
+                Preconditions that must be met before applying changes.
+              ''';
+            };
+            postconditions = mkUnsetOption {
+              type = ${conditionBlockType};
+              description = '''
+                Postconditions that must be met after applying changes.
+              ''';
+            };
+            destroy = mkUnsetOption {
+              type = types.bool;
+              description = '''
+                When `false`, OpenTofu will "forget" the resource instead of destroying it.
+              ''';
+            };
+            enabled = mkUnsetOption {
+              type = types.either referenceType types.bool;
+              description = '''
+                Controls whether a resource is created and managed by OpenTofu.
+                When `false`, the resource is excluded as if it did not exist.
+              ''';
+            };
+          };
+        };
+        description = '''
+          Lifecycle customizations for this resource.
+        ''';
+      };
+    '';
+
   genOptions = schema: isData:
     concatStrings (mapAttrsToList (resourceType: value:
       builtins.addErrorContext "[tofunix] while generating options for '${resourceType}' (value: ${builtins.toJSON value})"
@@ -137,12 +252,12 @@
                 type = types.str;
                 default = name;
               };
-              count = mkUnsetOption {
-                type = types.either referenceType types.int;
-                description = '''
-                  Terraform count, used to create multiple instances of this resource/data.
-                ''';
-              };
+              ${sharedMetaArgs}
+              ${
+          if isData
+          then ""
+          else resourceOnlyMetaArgs
+        }
               ${getAttributes resourceType "\${name}" value.block isData}
               ${getBlocks resourceType "\${name}" value.block isData}
             };
