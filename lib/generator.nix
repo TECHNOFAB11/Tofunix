@@ -48,16 +48,27 @@
     builtins.addErrorContext "[tofunix] while converting type ${builtins.toJSON typ}"
     "(types.either referenceType (${convertTypeInner typ}))";
   convertNestedType = typ:
-  # TODO: no idea what other `nesting_mode`s exist, the cloudflare provider only uses `single` for example.
-  # Maybe list and maps also exist? Then we just have to prepend attrsOf or listOf maybe?
-    builtins.addErrorContext "[tofunix] while converting nested type ${builtins.toJSON typ}"
-    ''
-      types.submodule {
-        options = {
-          ${mkAttributes typ.attributes or {}}
-        };
-      }
-    '';
+    let
+      submod = ''
+        types.submodule {
+          options = {
+            ${mkAttributes typ.attributes or {}}
+          };
+        }
+      '';
+      listof = "types.listOf (${submod})";
+      attrsof = "types.attrsOf (${submod})";
+
+      mode = typ.nesting_mode or "single";
+    in
+    builtins.addErrorContext "[tofunix] while converting nested type ${builtins.toJSON typ}" (
+      if mode == "list" || mode == "set" then
+        listof
+      else if mode == "map" then
+        attrsof
+      else
+        submod
+    );
 
   mkAttributes = src:
     concatStrings (mapAttrsToList (name: value: let
