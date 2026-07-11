@@ -28,7 +28,7 @@
   sourcesObj = builtins.listToAttrs (map (source: {
       name = cleanName (removeVersion (removeRegistry source));
       value = {
-        source = removeVersion source;
+        source = removeVersion (removeRegistry source);
         version = getVersion source;
       };
     })
@@ -56,14 +56,7 @@
   spec = builtins.fromJSON (builtins.readFile specJson);
   transformedSpec = builtins.listToAttrs (map (key: let
     name = cleanName (removeRegistry key);
-    # this tries to keep the registry if the user specified one originally, but
-    # strips it away if not. Since commonly we have "registry.opentofu.org" here,
-    # but terraform for example doesn't seem to like some of the providers there
-    hadRegistry = hasRegistry (sourcesObj.${name}.source);
-    source =
-      if hadRegistry
-      then key
-      else removeRegistry key;
+    source = removeRegistry key;
     provider = getProvider key;
   in {
     inherit name;
