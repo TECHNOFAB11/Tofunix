@@ -4,11 +4,12 @@
   fullSpec,
   ...
 }: let
-  inherit (lib) concatStrings mapAttrsToList;
+  inherit (lib) concatStrings mapAttrsToList strings;
+  inherit (strings) escapeNixString;
   inherit (fullSpec) provider version source spec;
 
   cleanDescription = val:
-    builtins.replaceStrings ["\${"] ["''\${"] (val.description or "");
+    escapeNixString (val.description or "");
 
   genObjectOptions = typ:
     concatStrings (mapAttrsToList (name: value: ''
@@ -47,27 +48,25 @@
   convertType = typ:
     builtins.addErrorContext "[tofunix] while converting type ${builtins.toJSON typ}"
     "(types.either referenceType (${convertTypeInner typ}))";
-  convertNestedType = typ:
-    let
-      submod = ''
-        types.submodule {
-          options = {
-            ${mkAttributes typ.attributes or {}}
-          };
-        }
-      '';
-      listof = "types.listOf (${submod})";
-      attrsof = "types.attrsOf (${submod})";
+  convertNestedType = typ: let
+    submod = ''
+      types.submodule {
+        options = {
+          ${mkAttributes typ.attributes or {}}
+        };
+      }
+    '';
+    listof = "types.listOf (${submod})";
+    attrsof = "types.attrsOf (${submod})";
 
-      mode = typ.nesting_mode or "single";
-    in
+    mode = typ.nesting_mode or "single";
+  in
     builtins.addErrorContext "[tofunix] while converting nested type ${builtins.toJSON typ}" (
-      if mode == "list" || mode == "set" then
-        listof
-      else if mode == "map" then
-        attrsof
-      else
-        submod
+      if mode == "list" || mode == "set"
+      then listof
+      else if mode == "map"
+      then attrsof
+      else submod
     );
 
   mkAttributes = src:
@@ -86,7 +85,7 @@
           then convertNestedType value.nested_type
           else convertType value.type
         };
-          description = '''${cleanDescription value} ''';
+          description = ${cleanDescription value};
         };
       '')
     src);
@@ -105,7 +104,7 @@
                 ${getBlocks resourceType resourceName value.block isData}
               };
             }); in types.either mod (types.listOf mod);
-            description = '''${cleanDescription value} ''';
+            description = ${cleanDescription value};
           };
         '') (block.block_types or {}))
     );
@@ -127,7 +126,7 @@
             then convertNestedType value.nested_type
             else convertType value.type
           };
-            description = '''${cleanDescription value} ''';
+            description = ${cleanDescription value};
             apply = val: if val ? __toString then builtins.toString val else val;
           };
         '')
@@ -273,7 +272,7 @@
               ${getBlocks resourceType "\${name}" value.block isData}
             };
           }));
-          description = '''${cleanDescription value.block} ''';
+          description = ${cleanDescription value.block};
         };
       '')
     schema);
@@ -350,7 +349,7 @@
               ${providerAttributes}
             };
           }));
-          description = '''${cleanDescription spec.provider.block}''';
+          description = ${cleanDescription spec.provider.block};
         };
 
         # required for looking up the suboptions
