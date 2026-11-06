@@ -49,7 +49,7 @@
       "original": {
         "dir": "lib",
         "owner": "TECHNOFAB",
-        "ref": "3.1.2",
+        "ref": "v3.1.2",
         "repo": "nix-gitlab-ci",
         "type": "gitlab"
       }
@@ -57,17 +57,17 @@
     "nixmkdocs-lib": {
       "locked": {
         "dir": "lib",
-        "lastModified": 1767549915,
-        "narHash": "sha256-by3r2qddlyzylup5fzSaDwtoy3eFHNKb65IuIq6bsAs=",
+        "lastModified": 1791354014,
+        "narHash": "sha256-mUMmtJlesrV/9HEPKIjlC8B6GOSNZPBYRp0aEKJ7fJc=",
         "owner": "TECHNOFAB",
         "repo": "nixmkdocs",
-        "rev": "f3b2f4b19178e97c5580367be0f97e61a085db6d",
+        "rev": "c88f7a5428a15836badcd1276badedccead2e1fe",
         "type": "gitlab"
       },
       "original": {
         "dir": "lib",
         "owner": "TECHNOFAB",
-        "ref": "v1.1.0",
+        "ref": "v1.1.1",
         "repo": "nixmkdocs",
         "type": "gitlab"
       }
@@ -75,17 +75,17 @@
     "nixtest-lib": {
       "locked": {
         "dir": "lib",
-        "lastModified": 1775133683,
-        "narHash": "sha256-06jKKes7NjBQClKXTZTmo7GiGJhe1j5ZMW6jle8Vr1o=",
+        "lastModified": 1792086832,
+        "narHash": "sha256-RaLwCISEXgCSSz7CL2iHDVgcW8FifD9UywRsCOvTreY=",
         "owner": "TECHNOFAB",
         "repo": "nixtest",
-        "rev": "143921cad9e6076700a45cdb7ff47c91f9801225",
+        "rev": "10b4651d372474670e96d2bb6dde1cc64a9c9d4b",
         "type": "gitlab"
       },
       "original": {
         "dir": "lib",
         "owner": "TECHNOFAB",
-        "ref": "v1.3.0",
+        "ref": "v1.4.0",
         "repo": "nixtest",
         "type": "gitlab"
       }
@@ -104,17 +104,17 @@
     "soonix-lib": {
       "locked": {
         "dir": "lib",
-        "lastModified": 1769607658,
-        "narHash": "sha256-gF9/QmmaNRgqkC5cqSGgwWvGXj9Mj4qMDkvvF/5BlSA=",
+        "lastModified": 1791351508,
+        "narHash": "sha256-GAREmKOc3TSKp5lOZGmBanFVVesSmAk91jSJ+gHtK94=",
         "owner": "TECHNOFAB",
         "repo": "soonix",
-        "rev": "19a88a0c2681bbc85bc2cbe4f2860316d50fe957",
+        "rev": "795af1d719d5c57a67ee88a35864fd10bc2bce43",
         "type": "gitlab"
       },
       "original": {
         "dir": "lib",
         "owner": "TECHNOFAB",
-        "ref": "v0.2.0",
+        "ref": "v0.2.1",
         "repo": "soonix",
         "type": "gitlab"
       }
