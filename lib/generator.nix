@@ -93,18 +93,54 @@
 
   getBlocks = resourceType: resourceName: block: isData:
     builtins.addErrorContext "[tofunix] while getting blocks of resource type '${resourceType}'" (
-      concatStrings (mapAttrsToList (name: value:
+      concatStrings (mapAttrsToList (name: value: let
+        mode = value.nesting_mode or "single";
+        minimum = value.min_items or 0;
+        maximum =
+          if builtins.elem mode ["single" "group"]
+          then 1
+          else value.max_items or 0;
+        mkOptName =
+          if minimum > 0
+          then "mkOption"
+          else "mkUnsetOption";
+        bounds = "${toString minimum}..${
+          if maximum == 0
+          then "unbounded"
+          else toString maximum
+        }";
+      in
         builtins.addErrorContext "[tofunix] while generating option for '${name}' (value: ${builtins.toJSON value})"
         # nix
         ''
-          "${name}" = mkUnsetOption {
+          "${name}" = ${mkOptName} {
             type = let mod = (types.submodule {
               options = {
                 ${getAttributes resourceType resourceName value.block isData}
                 ${getBlocks resourceType resourceName value.block isData}
               };
-            }); in types.either mod (types.listOf mod);
+            });
+              block = ${
+            if mode == "map"
+            then "types.attrsOf mod"
+            else if builtins.elem mode ["single" "group" "list" "set"]
+            then "mod"
+            else throw "Unknown nesting mode '${mode}' for block '${name}'"
+          };
+            in types.either block (types.listOf block);
             description = ${cleanDescription value};
+            apply = val:
+              if isType "unset" val then val else let
+                blocks = if builtins.isList val then val else [val];
+                count = ${
+            if mode == "map"
+            then "builtins.foldl' (total: item: total + builtins.length (builtins.attrNames item)) 0 blocks"
+            else "builtins.length blocks"
+          };
+              in
+                if count >= ${toString minimum} && (${toString maximum} == 0 || count <= ${toString maximum})
+                then val
+                else throw (${escapeNixString "Nested block '${name}' expects ${bounds} blocks; got "} + toString count);
           };
         '') (block.block_types or {}))
     );
