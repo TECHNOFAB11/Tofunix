@@ -11,6 +11,9 @@
   cleanDescription = val:
     escapeNixString (val.description or "");
 
+  computedOnly = value:
+    (value.computed or false) && !(value.optional or false) && !(value.required or false);
+
   genObjectOptions = typ:
     concatStrings (mapAttrsToList (name: value: ''
         ${name} = mkUnsetOption {type = ${convertType value};};
@@ -86,6 +89,11 @@
           else convertType value.type
         };
           description = ${cleanDescription value};
+          ${
+          if computedOnly value
+          then "readOnly = true;"
+          else ""
+        }
         };
       '')
     src);
@@ -163,6 +171,11 @@
             else convertType value.type
           };
             description = ${cleanDescription value};
+            ${
+            if computedOnly value
+            then "readOnly = true;"
+            else ""
+          }
             apply = val: if val ? __toString then builtins.toString val else val;
           };
         '')
