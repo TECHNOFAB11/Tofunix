@@ -225,7 +225,8 @@ in {
               else
                 (
                   map (val: let
-                    res = builtins.removeAttrs val computedAttrs;
+                    # Force read-only checks before removing these fields from the JSON.
+                    res = builtins.deepSeq (map (attr: val.${attr}) computedAttrs) (builtins.removeAttrs val computedAttrs);
                   in
                     if nest && val ? _name
                     then {${val._name} = res;}

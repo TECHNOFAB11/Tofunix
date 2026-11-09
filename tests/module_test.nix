@@ -72,7 +72,7 @@ in {
             sources = [nullPlugin];
             moduleConfig = {
               variable.test_var.default = "a";
-              resource.null_resource."example".id = "dummy-id";
+              resource.null_resource."example" = {};
               data.null_data_source."example".inputs.test = "dummy-body";
             };
           };
