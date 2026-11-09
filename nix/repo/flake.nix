@@ -5,7 +5,7 @@
     soonix-lib.url = "gitlab:TECHNOFAB/soonix/v0.2.1?dir=lib";
     nix-gitlab-ci-lib.url = "gitlab:TECHNOFAB/nix-gitlab-ci/v3.1.2?dir=lib";
     nixmkdocs-lib.url = "gitlab:TECHNOFAB/nixmkdocs/v1.1.1?dir=lib";
-    nixtest-lib.url = "gitlab:TECHNOFAB/nixtest/v1.4.0?dir=lib";
+    nixtest-lib.url = "gitlab:TECHNOFAB/nixtest/v1.4.1?dir=lib";
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
       flake = false;

@@ -75,17 +75,17 @@
     "nixtest-lib": {
       "locked": {
         "dir": "lib",
-        "lastModified": 1792086832,
-        "narHash": "sha256-RaLwCISEXgCSSz7CL2iHDVgcW8FifD9UywRsCOvTreY=",
+        "lastModified": 1794224763,
+        "narHash": "sha256-086MR5xS2yCfe33BUnBST1+JEyP8METa7on+ml1UyTc=",
         "owner": "TECHNOFAB",
         "repo": "nixtest",
-        "rev": "10b4651d372474670e96d2bb6dde1cc64a9c9d4b",
+        "rev": "e6a23c031361208281bda441fe8da105ba62a2e6",
         "type": "gitlab"
       },
       "original": {
         "dir": "lib",
         "owner": "TECHNOFAB",
-        "ref": "v1.4.0",
+        "ref": "v1.4.1",
         "repo": "nixtest",
         "type": "gitlab"
       }
