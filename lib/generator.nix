@@ -50,7 +50,7 @@
       or (builtins.trace "[tofunix] warning, found unknown type: ${typ}" "types.unspecified");
   convertType = typ:
     builtins.addErrorContext "[tofunix] while converting type ${builtins.toJSON typ}"
-    "(types.either referenceType (${convertTypeInner typ}))";
+    "(types.nullOr (types.either referenceType (${convertTypeInner typ})))";
   convertNestedType = typ: let
     submod = ''
       types.submodule {
