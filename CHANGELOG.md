@@ -2,6 +2,18 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [v3.0.2](https://gitlab.com/TECHNOFAB/tofunix/compare/aab4a40801c5241376cc052279fa7d730b02e2b6..v3.0.2) - 2026-11-11
+#### Bug Fixes
+- (**generator**) allow null in most fields - ([0dbabaa](https://gitlab.com/TECHNOFAB/tofunix/commit/0dbabaac45ca5bb8007ac217e7a04790cd67e9b5)) - [@TECHNOFAB](https://gitlab.com/TECHNOFAB)
+- (**generator**) reject computed-only attribute assignments - ([d578d95](https://gitlab.com/TECHNOFAB/tofunix/commit/d578d956f6dbf77c7194a65647ac888d56f22916)) - Rupan Sunderapandyan
+- (**generator**) enforce nested block constraints - ([12ef737](https://gitlab.com/TECHNOFAB/tofunix/commit/12ef737051259dba128f19d98c171b4590d2d496)) - Rupan Sunderapandyan
+- (**generator**) use escapeNixString instead of replaceStrings - ([aab4a40](https://gitlab.com/TECHNOFAB/tofunix/commit/aab4a40801c5241376cc052279fa7d730b02e2b6)) - [@TECHNOFAB](https://gitlab.com/TECHNOFAB)
+#### Miscellaneous Chores
+- (**flake**) update nixtest to v1.4.1 - ([612c223](https://gitlab.com/TECHNOFAB/tofunix/commit/612c223602eeeaaf20d806955aae31e65fafe2c6)) - [@TECHNOFAB](https://gitlab.com/TECHNOFAB)
+- (**flake**) bump inputs - ([0d78d12](https://gitlab.com/TECHNOFAB/tofunix/commit/0d78d12dd9b7dc0e154a4642de876ef278e79876)) - [@TECHNOFAB](https://gitlab.com/TECHNOFAB)
+
+- - -
+
 ## [v3.0.1](https://gitlab.com/TECHNOFAB/tofunix/compare/69fe8f63cf09a1ac5b04aa746021e4cb0623bfb7..v3.0.1) - 2026-10-11
 #### Bug Fixes
 - (**gitlab**) add patch to support newer opentofu versions - ([69fe8f6](https://gitlab.com/TECHNOFAB/tofunix/commit/69fe8f63cf09a1ac5b04aa746021e4cb0623bfb7)) - TECHNOFAB
